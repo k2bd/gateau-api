@@ -3,10 +3,10 @@ steps:
     entrypoint: "bash"
     args:
       - -c
-      - docker build -t gcr.io/$PROJECT_ID/gcp-fastapi-poetry:latest -f Dockerfile .
+      - docker build -t gcr.io/$PROJECT_ID/gateau-api:latest -f Dockerfile .
 
   - name: "gcr.io/cloud-builders/docker"
-    args: ["push", "gcr.io/$PROJECT_ID/gcp-fastapi-poetry:latest"]
+    args: ["push", "gcr.io/$PROJECT_ID/gateau-api:latest"]
 
   # Deploy service image to Cloud Run
   - name: "gcr.io/cloud-builders/gcloud"
@@ -15,11 +15,11 @@ steps:
       - -c
       - >
         gcloud
-        run deploy gcp-fastapi-poetry
+        run deploy gateau-api
         --cpu 1
         --memory 256M
         --max-instances 5
-        --image gcr.io/$PROJECT_ID/gcp-fastapi-poetry:latest
+        --image gcr.io/$PROJECT_ID/gateau-api:latest
         --region europe-west1
         --platform managed
         --allow-unauthenticated

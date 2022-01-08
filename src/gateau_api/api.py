@@ -3,7 +3,7 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from gcp_fastapi_poetry.types import ExampleResponse
+from gateau_api.types import ExampleResponse
 
 logger = logging.getLogger(__name__)
 

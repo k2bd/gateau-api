@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "gcp-fastapi-poetry"
+name = "gateau-api"
 version = "0.1.0"
 description = ""
 authors = ["Kevin Duff <kevinkelduff@gmail.com>"]
@@ -41,17 +41,17 @@ test.sequence = ["unit", "integration"]
 
 [tool.poe.tasks.unit]
 sequence = [
-    {cmd = "pytest -vv --cov-report xml --cov-report term --cov=gcp_fastapi_poetry tests/unit"},
+    {cmd = "pytest -vv --cov-report xml --cov-report term --cov=gateau_api tests/unit"},
 ]
 
 [tool.poe.tasks.integration]
 sequence = [
-    {shell = "pytest -vv --cov-append --cov-report xml --cov-report term --cov=gcp_fastapi_poetry tests/integration"},
+    {shell = "pytest -vv --cov-append --cov-report xml --cov-report term --cov=gateau_api tests/integration"},
 ]
 
 [tool.poe.tasks.local-server]
 sequence = [
-    {shell = "source .dev.env && uvicorn gcp_fastapi_poetry.api:app --reload --port 8011"},
+    {shell = "uvicorn gateau_api.api:app --reload --port 8011"},
 ]
 
 [build-system]
