@@ -48,5 +48,5 @@ jobs:
       - name: Push results
         # See https://www.wearecogworks.com/blog/quick-guide-to-running-sub-workflows-with-github-actions/
         run: |
-          git push
+          git push "https://$GITHUB_ACTOR:${{ secrets.DEPLOY_TOKEN }}@github.com/$GITHUB_REPOSITORY.git"
           git push "https://$GITHUB_ACTOR:${{ secrets.DEPLOY_TOKEN }}@github.com/$GITHUB_REPOSITORY.git" --tags
