@@ -3,8 +3,7 @@ name: Maintain major version and latest tags
 on:
   push:
     tags:
-      # Any semver tag
-      - "v*.*.*"
+      - v*
 
 jobs:
   actions-tagger:
