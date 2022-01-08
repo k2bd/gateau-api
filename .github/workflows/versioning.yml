@@ -10,9 +10,10 @@ on:
 
 
 jobs:
-  actions-tagger:
-    runs-on: windows-latest
+  update-majorver:
+    name: Update Major Version Tag
+    runs-on: ubuntu-latest
     steps:
-      - uses: Actions-R-Us/actions-tagger@latest
+      - uses: nowactions/update-majorver@v1
         with:
-          publish_latest_tag: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
