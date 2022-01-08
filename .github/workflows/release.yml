@@ -25,6 +25,8 @@ jobs:
           poetry-version: 1.1.4
       - name: Configure git
         run: |
+          git config --global user.name 'Release bot'
+          git config --global user.email 'nobody@github.com'
           git push
       - name: bump release version and tag
         run: |
