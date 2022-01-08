@@ -25,8 +25,6 @@ jobs:
           poetry-version: 1.1.4
       - name: Configure git
         run: |
-          git config --global user.name 'Release bot'
-          git config --global user.email 'kevinkelduff@gmail.com'
           git push
       - name: bump release version and tag
         run: |
@@ -43,6 +41,6 @@ jobs:
         run: |
           git push
           git push --tags
-      - uses: Actions-R-Us/actions-tagger@latest
+      - uses: nowactions/update-majorver@v1
         with:
-          publish_latest_tag: true
+          github_token: ${{ secrets. GITHUB_TOKEN }}
