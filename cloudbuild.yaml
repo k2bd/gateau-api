@@ -28,7 +28,7 @@ steps:
         --platform managed
         --allow-unauthenticated
 
-  # Apply domain mapping
+  # Apply domain mapping. Cheap idempotency by ignoring failures.
   - name: "gcr.io/cloud-builders/gcloud"
     entrypoint: "bash"
     args:
@@ -39,4 +39,4 @@ steps:
         --service ${TAG_NAME}-gateau-api
         --domain ${TAG_NAME}.${_GATEAU_API_DOMAIN}
         --region europe-west1
-        --force-override
+        || true
