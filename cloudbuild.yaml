@@ -38,4 +38,5 @@ steps:
         beta run domain-mappings create
         --service ${TAG_NAME}-gateau-api
         --domain ${TAG_NAME}.${_GATEAU_API_DOMAIN}
+        --region europe-west1
         --force-override
