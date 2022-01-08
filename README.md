@@ -1,12 +1,7 @@
-# Python + Poetry REST API with FastAPI, hosted on GCP
+# Gateau API
 
-## Getting started from the template
-1. Create and test your API. Your app under `gateau_api.api:app` will be hosted on CloudRun when it's deployed.
-1. Change your Cloud Run configuration in `cloudbuild.yaml`. By default, it will deploy an API that can be invoked with no authentication.
-1. Configure Cloud Build in your GCP project to deploy from `cloudbuild.yaml` on a new tag push.
-1. When you're ready to release the first version, run the release GitHub action.
-1. Remove this section from `README.md`.
-1. Happy hacking!
+[![CI](https://github.com/k2bd/gateau-api/actions/workflows/ci.yml/badge.svg)](https://github.com/k2bd/gateau-api/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/k2bd/gateau-api/branch/main/graph/badge.svg?token=RNU7U9OTEZ)](https://codecov.io/gh/k2bd/gateau-api)
 
 ## Developing
 
