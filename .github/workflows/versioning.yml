@@ -4,6 +4,10 @@ on:
   push:
     tags:
       - 'v*'
+  create:
+    tags:
+      - 'v*'
+
 
 jobs:
   update-majorver:
