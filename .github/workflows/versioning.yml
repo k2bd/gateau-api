@@ -1,0 +1,18 @@
+# This action is only triggered when a version tag is pushed outside of the
+# context of the release action, e.g. an old version is updated for a bugfix.
+
+name: Update Major Version Tag
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  update-majorver:
+    name: Update Major Version Tag
+    runs-on: ubuntu-latest
+    steps:
+      - uses: nowactions/update-majorver@v1
+        with:
+          github_token: ${{ secrets. GITHUB_TOKEN }}
