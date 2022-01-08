@@ -15,7 +15,13 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+        with:
+            # NOTE @v2 uses the token as an auth http header. Set it to
+            # a Personal Access Token instead of secrets.GITHUB_TOKEN
+            # so that tag pushes trigger repo push events.
+            # See https://github.community/t/action-does-not-trigger-another-on-push-tag-action/17148/8
+            token: ${{ secrets.DEPLOY_TOKEN }}
       - uses: actions/setup-python@v2
         with:
           python-version: 3.9
