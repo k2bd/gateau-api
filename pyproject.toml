@@ -9,6 +9,8 @@ python = "^3.9"
 fastapi = "^0.71.0"
 fastapi-camelcase = "^1.0.5"
 uvicorn = "^0.16.0"
+firebase-admin = "^5.2.0"
+bidict = "^0.21.4"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
@@ -46,13 +48,19 @@ sequence = [
 
 [tool.poe.tasks.integration]
 sequence = [
-    {shell = "pytest -vv --cov-append --cov-report xml --cov-report term --cov=gateau_api tests/integration"},
+    {shell = 'firebase emulators:exec --only database "pytest -vv --cov-append --cov-report xml --cov-report term --cov=gateau_api tests/integration"'},
 ]
+
+[tool.poe.tasks.integration.env]
+FIREBASE_DATABASE_URL = "http://localhost:9000"
 
 [tool.poe.tasks.local-server]
 sequence = [
-    {shell = "uvicorn gateau_api.api:app --reload --port 8011"},
+    {shell = 'firebase emulators:exec --only database "uvicorn gateau_api.api:app --reload --port 8011"'},
 ]
+
+[tool.poe.tasks.local-server.env]
+FIREBASE_DATABASE_URL = "http://localhost:9000"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
