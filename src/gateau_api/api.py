@@ -25,7 +25,7 @@ async def get_subscription(roomCode: str, cartType: Cartridge):
     pass
 
 
-@app.post("/game/{roomCode}/ram/")
+@app.post("/game/{roomCode}/ramChange/")
 async def post_ram_change(roomCode: str):
     logger.info(f"POST /game/{roomCode}/ram/")
     pass

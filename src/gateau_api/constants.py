@@ -1,0 +1,9 @@
+import os
+
+FIREBASE_DATABASE_URL = os.environ.get("FIREBASE_DATABASE_URL", "")
+
+FIREBASE_API_KEY = os.environ.get("FIREBASE_API_KEY", "")
+
+FIREBASE_AUTH_DOMAIN = os.environ.get("FIREBASE_AUTH_DOMAIN", "")
+
+FIREBASE_STORAGE_BUCKET = os.environ.get("FIREBASE_STORAGE_BUCKET", "")

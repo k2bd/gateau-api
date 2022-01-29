@@ -9,8 +9,8 @@ python = "^3.9"
 fastapi = "^0.71.0"
 fastapi-camelcase = "^1.0.5"
 uvicorn = "^0.16.0"
-firebase-admin = "^5.2.0"
 bidict = "^0.21.4"
+Pyrebase4 = "^4.5.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
@@ -21,6 +21,7 @@ mypy = "^0.931"
 pytest-cov = "^3.0.0"
 poethepoet = "^0.11.0"
 requests = "^2.27.1"
+freezegun = "^1.1.0"
 
 [tool.isort]
 profile = "black"
@@ -52,7 +53,7 @@ sequence = [
 ]
 
 [tool.poe.tasks.integration.env]
-FIREBASE_DATABASE_URL = "http://localhost:9000"
+FIREBASE_DATABASE_URL = "http://127.0.0.1:9000"
 
 [tool.poe.tasks.local-server]
 sequence = [
@@ -60,7 +61,7 @@ sequence = [
 ]
 
 [tool.poe.tasks.local-server.env]
-FIREBASE_DATABASE_URL = "http://localhost:9000"
+FIREBASE_DATABASE_EMULATOR_HOST = "localhost:9000"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

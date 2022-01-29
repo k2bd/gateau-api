@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from bidict import bidict
 
@@ -624,7 +624,7 @@ class PokemonRedBlueInfo(CartridgeInfo):
     @staticmethod
     def meaning_for_byte_change(
         address: int,
-        old_value: int,
+        old_value: Optional[int],
         new_value: int,
     ) -> List[ChangeMeaning]:
         """
@@ -636,7 +636,11 @@ class PokemonRedBlueInfo(CartridgeInfo):
 
         if address in INTL_BIT_TO_MEANING:
             new_bits = [int(i) for i in "{0:08b}".format(new_value)]
-            old_bits = [int(i) for i in "{0:08b}".format(old_value)]
+            old_bits = (
+                [int(i) for i in "{0:08b}".format(old_value)]
+                if old_value is not None
+                else [not i for i in new_bits]
+            )
             changed_bits = [
                 location
                 for location in range(len(new_bits))
@@ -645,13 +649,17 @@ class PokemonRedBlueInfo(CartridgeInfo):
 
             results = []
             for change in changed_bits:
-                meaning = INTL_BIT_TO_MEANING[address][change]
+                try:
+                    meaning = INTL_BIT_TO_MEANING[address][change]
+                except KeyError:
+                    continue
                 positive = new_bits[change] == 1
-                results.append(ChangeMeaning(meaning=meaning, positive=positive))
+                results.append(ChangeMeaning(meaning=meaning, value=positive))
 
             return results
 
         if address in INTL_BYTE_TO_MEANING:
-            return [ChangeMeaning(meaning=INTL_BYTE_TO_MEANING[address], positive=True)]
+            # TODO: Refactor to have proper values parsing
+            return [ChangeMeaning(meaning=INTL_BYTE_TO_MEANING[address], value=True)]
 
         return []
