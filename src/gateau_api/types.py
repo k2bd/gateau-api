@@ -3,8 +3,10 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from enum import Enum
 from typing import List, Optional
-
+from black import Union
+from datetime import datetime
 from fastapi_camelcase import CamelModel
+from pydantic import Field
 
 from gateau_api.game_ram.carts import Cartridge, cart_info
 
@@ -56,6 +58,8 @@ class Player(CamelModel):
     """
     A player in a Gateau lobby
     """
+    #: Player UID
+    uid: str
 
     #: Player name
     name: str
@@ -64,17 +68,23 @@ class Player(CamelModel):
     cartridge: Cartridge
 
 
-class Trackable(CamelModel):
+def _now_iso():
+    return datetime.utcnow().isoformat() + "Z"
+
+
+class GameEvent(CamelModel):
     """
-    An individual trackable goal
+    An individual game event
     """
 
-    #: Kind of goal
-    kind: str
+    #: Meaning of the event
+    meaning: str
 
-    #: Players that have claimed this goal
-    claimed_by: List[str]
+    #: Value
+    value: Union[str, int, bool]
 
+    #: Player name
+    player_name: str
 
-class Goal(CamelModel):
-    """ """
+    #: UTC timestamp of the event update, in ISO format
+    timestamp: str = Field(default_factory=_now_iso)

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod, abstractstaticmethod
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 from black import Optional
 from pydantic import BaseModel
@@ -10,8 +10,9 @@ class ChangeMeaning(BaseModel):
     #: Meaning of the change
     meaning: str
 
-    #: If True, the new value is positive. If False, the new value is negative.
-    positive: bool
+    #: Value associated with a meaning, for example the name of a location
+    #: or the number of items in an inventory slot
+    value: Union[str, int, bool]
 
 
 class CartridgeInfo(ABC):
