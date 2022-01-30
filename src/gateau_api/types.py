@@ -84,7 +84,7 @@ class GameEvent(CamelModel):
     value: Union[str, int, bool]
 
     #: Player name
-    player_name: str
+    player_id: str
 
     #: UTC timestamp of the event update, in ISO format
     timestamp: str = Field(default_factory=_now_iso)
