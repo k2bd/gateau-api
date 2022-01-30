@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Union
 
-from black import Union
 from fastapi_camelcase import CamelModel
 from pydantic import Field
 
