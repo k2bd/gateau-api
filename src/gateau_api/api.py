@@ -1,31 +1,51 @@
 import logging
-from typing import Optional
+from typing import List
 
 from fastapi import Depends, FastAPI, Header
+from fastapi_camelcase import CamelModel
 
 from gateau_api.service import GateauFirebaseService
-from gateau_api.types import RamChangeInfo, Subscription
+from gateau_api.types import Player, RamChangeInfo, Subscription
 
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
 
-def get_service() -> GateauFirebaseService:
+async def get_service() -> GateauFirebaseService:
     return GateauFirebaseService()
 
 
-@app.get("/game/{gameId}/subscription", response_model=Subscription)
-async def get_subscription(
+@app.post("/game/{gameId}/players")
+async def post_player(
+    gameId: str,
+    player: Player,
+    service: GateauFirebaseService = Depends(get_service),
+):
+    service.set_player(game_id=gameId, player=player)
+
+
+class NewSubscriptions(CamelModel):
+    subscriptions: List[str]
+
+
+@app.post("/game/{gameId}/subscriptions")
+async def post_subsctiptions(
+    gameId: str,
+    subscriptions: NewSubscriptions,
+    service: GateauFirebaseService = Depends(get_service),
+):
+    service.add_subscriptions(game_id=gameId, meanings=set(subscriptions.subscriptions))
+
+
+@app.get("/game/{gameId}/ramSubscriptions", response_model=Subscription)
+async def get_ram_subscription(
     gameId: str,
     service: GateauFirebaseService = Depends(get_service),
-    player_id: Optional[str] = Header(None),
+    player_id: str = Header(""),
 ):
-    logger.info(f"GET /game/{gameId}/subscription")
-
     subscriptions = service.get_ram_subscriptions(game_id=gameId, player_id=player_id)
-
-    return Subscription(ram_addresses=list(subscriptions))
+    return Subscription(ram_addresses=sorted(subscriptions))
 
 
 @app.post("/game/{gameId}/ramChange")
@@ -33,8 +53,6 @@ async def post_ram_change(
     gameId: str,
     change: RamChangeInfo,
     service: GateauFirebaseService = Depends(get_service),
-    player_id: Optional[str] = Header(None),
+    player_id: str = Header(""),
 ):
-    logger.info(f"POST /game/{gameId}/ramChange")
-
     service.handle_ram(game_id=gameId, player_id=player_id, change_info=change)

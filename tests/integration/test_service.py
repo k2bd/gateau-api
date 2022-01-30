@@ -1,3 +1,5 @@
+from freezegun import freeze_time
+
 from gateau_api.game_ram.carts import Cartridge
 from gateau_api.game_ram.pokemon.constants import (
     ARBOK_OWNED,
@@ -16,7 +18,6 @@ from gateau_api.game_ram.pokemon.constants import (
 )
 from gateau_api.service import GateauFirebaseService
 from gateau_api.types import GameEvent, Player, RamChangeInfo, RamEvent
-from freezegun import freeze_time
 
 
 def test_set_and_get_player(service: GateauFirebaseService):
