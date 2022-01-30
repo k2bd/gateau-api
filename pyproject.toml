@@ -62,7 +62,7 @@ sequence = [
 ]
 
 [tool.poe.tasks.local-server.env]
-FIREBASE_DATABASE_EMULATOR_HOST = "localhost:9000"
+FIREBASE_DATABASE_URL = "http://127.0.0.1:9000"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
