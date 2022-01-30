@@ -28,6 +28,11 @@ steps:
         --platform managed
         --allow-unauthenticated
         --set-env-vars FIREBASE_API_KEY=$$FIREBASE_API_KEY,FIREBASE_AUTH_DOMAIN=$$FIREBASE_AUTH_DOMAIN,FIREBASE_DATABASE_URL=$$FIREBASE_DATABASE_URL,FIREBASE_STORAGE_BUCKET=$$FIREBASE_STORAGE_BUCKET
+    secretEnv:
+      - FIREBASE_API_KEY
+      - FIREBASE_AUTH_DOMAIN
+      - FIREBASE_DATABASE_URL
+      - FIREBASE_STORAGE_BUCKET
 
   # Apply domain mapping. Cheap idempotency by ignoring failures.
   - name: "gcr.io/cloud-builders/gcloud"
