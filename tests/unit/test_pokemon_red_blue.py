@@ -1,7 +1,8 @@
 from typing import Optional
-import pytest
-from gateau_api.game_ram.cartridge_info import ChangeMeaning
 
+import pytest
+
+from gateau_api.game_ram.cartridge_info import ChangeMeaning
 from gateau_api.game_ram.pokemon.constants import (
     BELLSPROUT_OWNED,
     BELLSPROUT_SEEN,

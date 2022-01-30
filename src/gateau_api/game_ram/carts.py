@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Type
 
 from gateau_api.game_ram.cartridge_info import CartridgeInfo
 from gateau_api.game_ram.pokemon.red_blue import PokemonRedBlueInfo
@@ -15,5 +16,5 @@ _CARTS = {
 }
 
 
-def cart_info(cart: Cartridge) -> CartridgeInfo:
+def cart_info(cart: Cartridge) -> Type[CartridgeInfo]:
     return _CARTS[cart]

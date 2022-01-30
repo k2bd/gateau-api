@@ -1,7 +1,6 @@
-from abc import ABC, abstractmethod, abstractstaticmethod
-from typing import List, Tuple, Union
+from abc import ABC, abstractmethod
+from typing import List, Optional, Union
 
-from black import Optional
 from pydantic import BaseModel
 
 
@@ -20,7 +19,8 @@ class CartridgeInfo(ABC):
     Info for a specific cartridge
     """
 
-    @abstractstaticmethod
+    @staticmethod
+    @abstractmethod
     def byte_for_meaning(meaning: str) -> int:
         """
         Get the address corresponding to a specific meaning for a given
@@ -32,10 +32,11 @@ class CartridgeInfo(ABC):
             If the meaning doesn't apply to this cartridge
         """
 
-    @abstractstaticmethod
+    @staticmethod
+    @abstractmethod
     def meaning_for_byte_change(
         address: int,
-        old_value: int,
+        old_value: Optional[int],
         new_value: int,
     ) -> List[ChangeMeaning]:
         """

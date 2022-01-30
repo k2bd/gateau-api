@@ -28,12 +28,18 @@ Database structure:
 """
 
 from typing import List, Set
-from gateau_api.constants import FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, FIREBASE_DATABASE_URL, FIREBASE_STORAGE_BUCKET
-from gateau_api.game_ram.cartridge_info import ChangeMeaning
+
 from pyrebase import initialize_app
 from pyrebase.pyrebase import Database
-from gateau_api.game_ram.carts import cart_info
 
+from gateau_api.constants import (
+    FIREBASE_API_KEY,
+    FIREBASE_AUTH_DOMAIN,
+    FIREBASE_DATABASE_URL,
+    FIREBASE_STORAGE_BUCKET,
+)
+from gateau_api.game_ram.cartridge_info import ChangeMeaning
+from gateau_api.game_ram.carts import cart_info
 from gateau_api.types import GameEvent, Player, RamChangeInfo
 
 

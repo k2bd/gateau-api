@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
-from enum import Enum
-from typing import List, Optional
-from black import Union
 from datetime import datetime
+from typing import List, Optional
+
+from black import Union
 from fastapi_camelcase import CamelModel
 from pydantic import Field
 
-from gateau_api.game_ram.carts import Cartridge, cart_info
+from gateau_api.game_ram.carts import Cartridge
 
 
 class Subscription(CamelModel):
@@ -58,6 +57,7 @@ class Player(CamelModel):
     """
     A player in a Gateau lobby
     """
+
     #: Player UID
     uid: str
 
