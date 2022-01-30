@@ -59,19 +59,19 @@ def test_add_and_get_events(service: GateauFirebaseService):
     event3 = GameEvent(
         meaning=KAKUNA_OWNED,
         value=True,
-        player_name="Jim",
+        player_id="Jim",
         timestamp="2021-11-03T10:10:10Z",
     )
     event1 = GameEvent(
         meaning=KAKUNA_OWNED,
         value=True,
-        player_name="Jones",
+        player_id="Jones",
         timestamp="2021-11-01T10:10:10Z",
     )
     event2 = GameEvent(
         meaning=SCYTHER_SEEN,
         value=False,
-        player_name="Jack",
+        player_id="Jack",
         timestamp="2021-11-02T10:10:10Z",
     )
 
@@ -123,49 +123,49 @@ def test_handle_ram(service: GateauFirebaseService):
         GameEvent(
             meaning=HITMONLEE_OWNED,
             value=True,
-            player_name="John Player",
+            player_id="player123",
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=HITMONCHAN_OWNED,
             value=True,
-            player_name="John Player",
+            player_id="player123",
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=ARBOK_OWNED,
             value=True,
-            player_name="John Player",
+            player_id="player123",
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=PARASECT_OWNED,
             value=True,
-            player_name="John Player",
+            player_id="player123",
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=PSYDUCK_OWNED,
             value=True,
-            player_name="John Player",
+            player_id="player123",
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=DROWZEE_OWNED,
             value=True,
-            player_name="John Player",
+            player_id="player123",
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=GOLEM_OWNED,
             value=True,
-            player_name="John Player",
+            player_id="player123",
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=MAGMAR_OWNED,
             value=True,
-            player_name="John Player",
+            player_id="player123",
             timestamp=frozen_time,
         ),
     ]

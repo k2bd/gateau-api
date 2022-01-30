@@ -12,11 +12,11 @@ Database structure:
                 }
             },
             "events": {
-                "{meaning}": {
+                "{random-unique-id}": {
                     "meaning": "Pikachu owned",
                     "value": true,
                     "playerName": "aaa",
-                    "timestamp": "2020-10-10T10:20:30",
+                    "timestamp": "2020-10-10T10:20:30Z",
                 }
             },
             "subscriptions": {
@@ -161,6 +161,6 @@ class GateauFirebaseService:
                 event = GameEvent(
                     meaning=update.meaning,
                     value=update.value,
-                    player_name=player.name,
+                    player_id=player.uid,
                 )
                 self.add_event(game_id=game_id, event=event)
