@@ -121,8 +121,9 @@ class GateauFirebaseService:
         """
         Idempotently add some subscriptions to the game
         """
-        db = self.subscriptions_db(game_id=game_id)
-        db.update({meaning: True for meaning in meanings})
+        for meaning in meanings:
+            db = self.subscriptions_db(game_id=game_id)
+            db.child(meaning).set(True)
 
     def get_events(self, game_id: str) -> List[GameEvent]:
         """

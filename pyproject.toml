@@ -58,7 +58,7 @@ FIREBASE_DATABASE_URL = "http://127.0.0.1:9000"
 
 [tool.poe.tasks.local-server]
 sequence = [
-    {shell = 'firebase emulators:exec --only database "uvicorn gateau_api.api:app --reload --port 8011"'},
+    {shell = 'firebase emulators:exec --only database --ui --project demo-gateau-local "uvicorn gateau_api.api:app --reload --port 8011"'},
 ]
 
 [tool.poe.tasks.local-server.env]
