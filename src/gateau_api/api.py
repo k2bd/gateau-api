@@ -6,10 +6,20 @@ from fastapi_camelcase import CamelModel
 
 from gateau_api.service import GateauFirebaseService
 from gateau_api.types import Player, RamChangeInfo, Subscription
+from fastapi.middleware.cors import CORSMiddleware
 
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins="*",
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 async def get_service() -> GateauFirebaseService:
