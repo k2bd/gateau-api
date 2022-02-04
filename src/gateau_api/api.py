@@ -2,11 +2,11 @@ import logging
 from typing import List
 
 from fastapi import Depends, FastAPI, Header
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi_camelcase import CamelModel
 
 from gateau_api.service import GateauFirebaseService
 from gateau_api.types import Player, RamChangeInfo, Subscription
-from fastapi.middleware.cors import CORSMiddleware
 
 logger = logging.getLogger(__name__)
 
