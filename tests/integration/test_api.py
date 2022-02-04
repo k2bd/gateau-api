@@ -3,18 +3,18 @@ from freezegun import freeze_time
 
 from gateau_api.game_ram.carts import Cartridge
 from gateau_api.game_ram.pokemon.constants import (
-    ARBOK_OWNED,
     CHARMANDER_SEEN,
     CHARMELEON_SEEN,
-    DROWZEE_OWNED,
-    GOLEM_OWNED,
-    HITMONCHAN_OWNED,
-    HITMONLEE_OWNED,
-    MAGMAR_OWNED,
+    GLOOM_OWNED,
+    GOLBAT_OWNED,
     MEWTWO_OWNED,
+    ODDISH_OWNED,
+    PARAS_OWNED,
     PARASECT_OWNED,
-    PSYDUCK_OWNED,
     SCYTHER_OWNED,
+    VENONAT_OWNED,
+    VILEPLUME_OWNED,
+    ZUBAT_OWNED,
 )
 from gateau_api.service import GateauFirebaseService
 from gateau_api.types import GameEvent, Player, RamChangeInfo, RamEvent
@@ -74,7 +74,7 @@ def test_get_ram_subscriptions_200(
     )
 
     assert response.status_code == 200
-    assert response.json() == {"ramAddresses": [0xD304, 0xD31B]}
+    assert response.json() == {"ramAddresses": [0xD309, 0xD30A]}
 
 
 def test_post_ram_change_200(
@@ -106,19 +106,7 @@ def test_post_ram_change_200(
 
     assert service.get_events("game123") == [
         GameEvent(
-            meaning=HITMONLEE_OWNED,
-            value=True,
-            player_id="player123",
-            timestamp=frozen_time,
-        ),
-        GameEvent(
-            meaning=HITMONCHAN_OWNED,
-            value=True,
-            player_id="player123",
-            timestamp=frozen_time,
-        ),
-        GameEvent(
-            meaning=ARBOK_OWNED,
+            meaning=VENONAT_OWNED,
             value=True,
             player_id="player123",
             timestamp=frozen_time,
@@ -130,25 +118,37 @@ def test_post_ram_change_200(
             timestamp=frozen_time,
         ),
         GameEvent(
-            meaning=PSYDUCK_OWNED,
+            meaning=PARAS_OWNED,
             value=True,
             player_id="player123",
             timestamp=frozen_time,
         ),
         GameEvent(
-            meaning=DROWZEE_OWNED,
+            meaning=VILEPLUME_OWNED,
             value=True,
             player_id="player123",
             timestamp=frozen_time,
         ),
         GameEvent(
-            meaning=GOLEM_OWNED,
+            meaning=GLOOM_OWNED,
             value=True,
             player_id="player123",
             timestamp=frozen_time,
         ),
         GameEvent(
-            meaning=MAGMAR_OWNED,
+            meaning=ODDISH_OWNED,
+            value=True,
+            player_id="player123",
+            timestamp=frozen_time,
+        ),
+        GameEvent(
+            meaning=GOLBAT_OWNED,
+            value=True,
+            player_id="player123",
+            timestamp=frozen_time,
+        ),
+        GameEvent(
+            meaning=ZUBAT_OWNED,
             value=True,
             player_id="player123",
             timestamp=frozen_time,
