@@ -60,9 +60,6 @@ class Player(CamelModel):
     #: Player UID
     uid: str
 
-    #: Player name
-    name: str
-
     #: Cartridge the player is using
     cartridge: Cartridge
 
