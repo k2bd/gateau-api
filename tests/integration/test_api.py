@@ -1,3 +1,4 @@
+from typing import Dict
 from fastapi.testclient import TestClient
 from freezegun import freeze_time
 
@@ -18,6 +19,8 @@ from gateau_api.game_ram.pokemon.constants import (
 )
 from gateau_api.service import GateauFirebaseService
 from gateau_api.types import GameEvent, Player, RamChangeInfo, RamEvent
+from tests.integration.constants import EXAMPLE_USER_ID
+from tests.integration.helpers import example_auth_header
 
 
 def test_post_player_200(
@@ -26,12 +29,13 @@ def test_post_player_200(
 ):
     response = api_client.post(
         "/game/gameABC/players",
-        json={"uid": "playerABC", "name": "Player 1", "cartridge": "Pokemon Red"},
+        json={"uid": EXAMPLE_USER_ID, "name": "Player 1", "cartridge": "Pokemon Red"},
+        headers=example_auth_header(),
     )
     assert response.status_code == 200, response.content
 
-    assert service.get_player("gameABC", "playerABC") == Player(
-        uid="playerABC",
+    assert service.get_player("gameABC", EXAMPLE_USER_ID) == Player(
+        uid=EXAMPLE_USER_ID,
         name="Player 1",
         cartridge="Pokemon Red",
     )
@@ -44,6 +48,7 @@ def test_post_new_subscriptions_200(
     response = api_client.post(
         "/game/gameABC/subscriptions",
         json={"subscriptions": [SCYTHER_OWNED, MEWTWO_OWNED]},
+        headers=example_auth_header(),
     )
     assert response.status_code == 200, response.content
 
@@ -62,7 +67,7 @@ def test_get_ram_subscriptions_200(
     service.add_subscriptions("game123", subscriptions)
 
     player = Player(
-        uid="player123",
+        uid=EXAMPLE_USER_ID,
         name="John Player",
         cartridge=Cartridge.POKEMON_RED,
     )
@@ -70,7 +75,7 @@ def test_get_ram_subscriptions_200(
 
     response = api_client.get(
         "/game/game123/ramSubscriptions",
-        headers={"player-id": "player123"},
+        headers=example_auth_header(),
     )
 
     assert response.status_code == 200, response.content
@@ -82,7 +87,7 @@ def test_post_ram_change_200(
     service: GateauFirebaseService,
 ):
     player = Player(
-        uid="player123",
+        uid=EXAMPLE_USER_ID,
         name="John Player",
         cartridge=Cartridge.POKEMON_RED,
     )
@@ -98,7 +103,7 @@ def test_post_ram_change_200(
     with freeze_time(frozen_time):
         response = api_client.post(
             "/game/game123/ramChange",
-            headers={"player-id": "player123"},
+            headers=example_auth_header(),
             json=change.dict(),
         )
 
@@ -108,49 +113,49 @@ def test_post_ram_change_200(
         GameEvent(
             meaning=VENONAT_OWNED,
             value=True,
-            player_id="player123",
+            player_id=EXAMPLE_USER_ID,
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=PARASECT_OWNED,
             value=True,
-            player_id="player123",
+            player_id=EXAMPLE_USER_ID,
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=PARAS_OWNED,
             value=True,
-            player_id="player123",
+            player_id=EXAMPLE_USER_ID,
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=VILEPLUME_OWNED,
             value=True,
-            player_id="player123",
+            player_id=EXAMPLE_USER_ID,
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=GLOOM_OWNED,
             value=True,
-            player_id="player123",
+            player_id=EXAMPLE_USER_ID,
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=ODDISH_OWNED,
             value=True,
-            player_id="player123",
+            player_id=EXAMPLE_USER_ID,
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=GOLBAT_OWNED,
             value=True,
-            player_id="player123",
+            player_id=EXAMPLE_USER_ID,
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=ZUBAT_OWNED,
             value=True,
-            player_id="player123",
+            player_id=EXAMPLE_USER_ID,
             timestamp=frozen_time,
         ),
     ]

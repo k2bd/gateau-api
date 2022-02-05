@@ -1,24 +1,25 @@
-from typing import Generator
+from typing import Dict, Generator
 
 import pytest
 from fastapi.testclient import TestClient
 
 from gateau_api.api import app
+from gateau_api.constants import (
+    FIREBASE_API_KEY,
+    FIREBASE_AUTH_DOMAIN,
+    FIREBASE_DATABASE_URL,
+    FIREBASE_STORAGE_BUCKET,
+)
 from gateau_api.service import GateauFirebaseService
 
-from firebase_admin import auth, initialize_app
+from gateau_api.api import __name__ as API_NAME
 
-import contextlib
-import os
+from .constants import EXAMPLE_USER_ID
 
-
-@pytest.fixture
-def custom_token():
-    auth.create_custom_token("testUser123")
 
 
 @pytest.fixture
-def service(custom_token) -> Generator[GateauFirebaseService, None, None]:
+def service() -> Generator[GateauFirebaseService, None, None]:
     s = GateauFirebaseService()
     try:
         yield s
@@ -27,7 +28,7 @@ def service(custom_token) -> Generator[GateauFirebaseService, None, None]:
 
 
 @pytest.fixture
-def api_client(service) -> TestClient:
+def api_client(service: GateauFirebaseService) -> TestClient:
     """
     API test client that can interact with a temporary database
     """

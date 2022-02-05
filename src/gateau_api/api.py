@@ -17,13 +17,17 @@ logger = logging.getLogger(__name__)
 firebase_init_app()
 
 
-async def get_user_uid(credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer())):
+async def get_user_uid(
+    credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer()),
+):
     token = credentials.credentials
 
     try:
-        auth.verify_id_token(id_token=token)
+        user = auth.verify_id_token(id_token=token)
     except Exception as e:
         raise HTTPException(status_code=401, detail=str(e)) from e
+
+    return user["uid"]
 
 
 app = FastAPI(dependencies=[Depends(get_user_uid)])
@@ -68,7 +72,7 @@ async def post_subsctiptions(
 async def get_ram_subscription(
     gameId: str,
     service: GateauFirebaseService = Depends(get_service),
-    player_id: str = Header(""),
+    player_id: str = Depends(get_user_uid),
 ):
     subscriptions = service.get_ram_subscriptions(game_id=gameId, player_id=player_id)
     return Subscription(ram_addresses=sorted(subscriptions))
@@ -79,6 +83,6 @@ async def post_ram_change(
     gameId: str,
     change: RamChangeInfo,
     service: GateauFirebaseService = Depends(get_service),
-    player_id: str = Header(""),
+    player_id: str = Depends(get_user_uid),
 ):
     service.handle_ram(game_id=gameId, player_id=player_id, change_info=change)
