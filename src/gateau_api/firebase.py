@@ -1,5 +1,6 @@
-import firebase_admin
 import json
+
+import firebase_admin
 
 from gateau_api.constants import FIREBASE_ADMIN_CREDENTIALS
 

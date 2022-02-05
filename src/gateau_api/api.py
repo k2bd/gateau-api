@@ -1,16 +1,15 @@
 import logging
 from typing import List
 
-from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi_camelcase import CamelModel
-from gateau_api.firebase import firebase_init_app
-
-from gateau_api.service import GateauFirebaseService
-from gateau_api.types import Player, RamChangeInfo, Subscription
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi_camelcase import CamelModel
 from firebase_admin import auth
 
+from gateau_api.firebase import firebase_init_app
+from gateau_api.service import GateauFirebaseService
+from gateau_api.types import Player, RamChangeInfo, Subscription
 
 logger = logging.getLogger(__name__)
 
