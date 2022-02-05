@@ -29,14 +29,13 @@ def test_post_player_200(
 ):
     response = api_client.post(
         "/game/gameABC/players",
-        json={"uid": EXAMPLE_USER_ID, "name": "Player 1", "cartridge": "Pokemon Red"},
+        json={"uid": EXAMPLE_USER_ID, "cartridge": "Pokemon Red"},
         headers=example_auth_header(),
     )
     assert response.status_code == 200, response.content
 
     assert service.get_player("gameABC", EXAMPLE_USER_ID) == Player(
         uid=EXAMPLE_USER_ID,
-        name="Player 1",
         cartridge="Pokemon Red",
     )
 
@@ -68,7 +67,6 @@ def test_get_ram_subscriptions_200(
 
     player = Player(
         uid=EXAMPLE_USER_ID,
-        name="John Player",
         cartridge=Cartridge.POKEMON_RED,
     )
     service.set_player("game123", player)
@@ -88,7 +86,6 @@ def test_post_ram_change_200(
 ):
     player = Player(
         uid=EXAMPLE_USER_ID,
-        name="John Player",
         cartridge=Cartridge.POKEMON_RED,
     )
     service.set_player("game123", player)
