@@ -28,7 +28,7 @@ def test_post_player_200(
         "/game/gameABC/players",
         json={"uid": "playerABC", "name": "Player 1", "cartridge": "Pokemon Red"},
     )
-    assert response.status_code == 200
+    assert response.status_code == 200, response.content
 
     assert service.get_player("gameABC", "playerABC") == Player(
         uid="playerABC",
@@ -45,7 +45,7 @@ def test_post_new_subscriptions_200(
         "/game/gameABC/subscriptions",
         json={"subscriptions": [SCYTHER_OWNED, MEWTWO_OWNED]},
     )
-    assert response.status_code == 200
+    assert response.status_code == 200, response.content
 
     assert service.get_subscriptions("gameABC") == {SCYTHER_OWNED, MEWTWO_OWNED}
 
@@ -73,7 +73,7 @@ def test_get_ram_subscriptions_200(
         headers={"player-id": "player123"},
     )
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.content
     assert response.json() == {"ramAddresses": [0xD309, 0xD30A]}
 
 
@@ -102,7 +102,7 @@ def test_post_ram_change_200(
             json=change.dict(),
         )
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.content
 
     assert service.get_events("game123") == [
         GameEvent(

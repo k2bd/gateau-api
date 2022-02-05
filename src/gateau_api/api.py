@@ -1,16 +1,32 @@
 import logging
 from typing import List
 
-from fastapi import Depends, FastAPI, Header
+from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_camelcase import CamelModel
+from gateau_api.firebase import firebase_init_app
 
 from gateau_api.service import GateauFirebaseService
 from gateau_api.types import Player, RamChangeInfo, Subscription
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from firebase_admin import auth
+
 
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+firebase_init_app()
+
+
+async def get_user_uid(credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer())):
+    token = credentials.credentials
+
+    try:
+        auth.verify_id_token(id_token=token)
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=str(e)) from e
+
+
+app = FastAPI(dependencies=[Depends(get_user_uid)])
 
 
 app.add_middleware(
