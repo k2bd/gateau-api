@@ -15,10 +15,8 @@ steps:
   - name: gcr.io/$PROJECT_ID/firebase
     args:
       - deploy
-      - --project=$${FIREBASE_PROJECT_ID}
+      - --project=gateau-api
       - --only=database
-    secretEnv:
-      - FIREBASE_PROJECT_ID
 
   # Deploy service image to Cloud Run
   - name: "gcr.io/cloud-builders/gcloud"
@@ -65,5 +63,3 @@ availableSecrets:
       env: "FIREBASE_DATABASE_URL"
     - versionName: projects/$PROJECT_ID/secrets/FIREBASE_STORAGE_BUCKET/versions/latest
       env: "FIREBASE_STORAGE_BUCKET"
-    - versionName: projects/$PROJECT_ID/secrets/FIREBASE_PROJECT_ID/versions/latest
-      env: "FIREBASE_PROJECT_ID"
