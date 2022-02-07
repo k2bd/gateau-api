@@ -14,7 +14,7 @@ steps:
 
   # Update Firebase Database Rules
   - name: gcr.io/$PROJECT_ID/firebase
-    args: ['deploy', '--project=$$FIREBASE_PROJECT_ID', '--only=database']
+    args: ['deploy', '--project=$${FIREBASE_PROJECT_ID}', '--only=database']
     secretEnv:
       - FIREBASE_PROJECT_ID
 
