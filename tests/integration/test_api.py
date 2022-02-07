@@ -72,7 +72,7 @@ def test_get_ram_subscriptions_200(
 
     response = api_client.get(
         "/game/game123/ramSubscriptions",
-        headers=example_auth_header(),
+        headers={"player-id": EXAMPLE_USER_ID},
     )
 
     assert response.status_code == 200, response.content
@@ -99,7 +99,7 @@ def test_post_ram_change_200(
     with freeze_time(frozen_time):
         response = api_client.post(
             "/game/game123/ramChange",
-            headers=example_auth_header(),
+            headers={"player-id": EXAMPLE_USER_ID},
             json=change.dict(),
         )
 
