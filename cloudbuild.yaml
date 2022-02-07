@@ -13,7 +13,7 @@ steps:
     args: ["push", "gcr.io/$PROJECT_ID/gateau-api:${TAG_NAME}"]
 
   # Update Firebase Database Rules
-  - name: gcr.io/project-id/firebase
+  - name: gcr.io/$PROJECT_ID/firebase
     args: ['deploy', '--project=$$FIREBASE_PROJECT_ID', '--only=database']
     secretEnv:
       - FIREBASE_PROJECT_ID
