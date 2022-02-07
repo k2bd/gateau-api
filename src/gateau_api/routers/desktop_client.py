@@ -3,18 +3,12 @@ Router for routes intended to interface with the desktop client
 """
 
 import logging
-from typing import List
 
-from fastapi import APIRouter, Depends, FastAPI, Header, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from fastapi_camelcase import CamelModel
-from firebase_admin import auth
+from fastapi import APIRouter, Depends, Header
 
 from gateau_api.common.get_service import get_service
-from gateau_api.firebase import firebase_init_app
 from gateau_api.service import GateauFirebaseService
-from gateau_api.types import Player, RamChangeInfo, Subscription
+from gateau_api.types import RamChangeInfo, Subscription
 
 logger = logging.getLogger(__name__)
 

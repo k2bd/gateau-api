@@ -5,8 +5,7 @@ Route intended to interface with the Web App
 import logging
 from typing import List
 
-from fastapi import APIRouter, Depends, FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi_camelcase import CamelModel
 from firebase_admin import auth
@@ -14,7 +13,7 @@ from firebase_admin import auth
 from gateau_api.common.get_service import get_service
 from gateau_api.firebase import firebase_init_app
 from gateau_api.service import GateauFirebaseService
-from gateau_api.types import Player, RamChangeInfo, Subscription
+from gateau_api.types import Player
 
 logger = logging.getLogger(__name__)
 
