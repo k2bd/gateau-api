@@ -65,6 +65,7 @@ availableSecrets:
       env: "FIREBASE_DATABASE_URL"
     - versionName: projects/$PROJECT_ID/secrets/FIREBASE_STORAGE_BUCKET/versions/latest
       env: "FIREBASE_STORAGE_BUCKET"
+  inline:
     - kmsKeyName: projects/$PROJECT_ID/locations/global/keyRings/deploy/cryptoKeys/firebase-deploy
-      secretEnv:
+      envMap:
         FIREBASE_TOKEN: CiQA5vOIaAilTAzLMngjeYaZddXpQxAP7wzvgXiAke6yszjNe/kSkQEAswiuAvdJ57PS0JICv2Mt\nvwqGeTaRTnfAlfs8O7aXGSCvyaBuJO4pu/O4EqStkzE1tVbL+i1mjI41WC2QJlPnfE1YI0Uln3x3\niRK+nagTEXvxhaQ5LECM+Sz4eU9Aaonam2i0B2P5iPNCZSuyr9zUagrXguuN0BrJGX0ky12KL6p7\n6nx5wt90yuWkXJ+L9xwb
