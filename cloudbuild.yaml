@@ -1,7 +1,6 @@
 # Required substituion variables:
 # - _GATEAU_API_DOMAIN
 
-
 steps:
   - name: "gcr.io/cloud-builders/docker"
     entrypoint: "bash"
@@ -14,7 +13,10 @@ steps:
 
   # Update Firebase Database Rules
   - name: gcr.io/$PROJECT_ID/firebase
-    args: ['deploy', '--project=$${FIREBASE_PROJECT_ID}', '--only=database']
+    args:
+      - deploy
+      - --project=$${FIREBASE_PROJECT_ID}
+      - --only=database
     secretEnv:
       - FIREBASE_PROJECT_ID
 
@@ -53,16 +55,15 @@ steps:
         --region europe-west1
         || true
 
-
 availableSecrets:
   secretManager:
-  - versionName: projects/$PROJECT_ID/secrets/FIREBASE_API_KEY/versions/latest
-    env: 'FIREBASE_API_KEY'
-  - versionName: projects/$PROJECT_ID/secrets/FIREBASE_AUTH_DOMAIN/versions/latest
-    env: 'FIREBASE_AUTH_DOMAIN'
-  - versionName: projects/$PROJECT_ID/secrets/FIREBASE_DATABASE_URL/versions/latest
-    env: 'FIREBASE_DATABASE_URL'
-  - versionName: projects/$PROJECT_ID/secrets/FIREBASE_STORAGE_BUCKET/versions/latest
-    env: 'FIREBASE_STORAGE_BUCKET'
-  - versionName: projects/$PROJECT_ID/secrets/FIREBASE_PROJECT_ID/versions/latest
-    env: 'FIREBASE_PROJECT_ID'
+    - versionName: projects/$PROJECT_ID/secrets/FIREBASE_API_KEY/versions/latest
+      env: "FIREBASE_API_KEY"
+    - versionName: projects/$PROJECT_ID/secrets/FIREBASE_AUTH_DOMAIN/versions/latest
+      env: "FIREBASE_AUTH_DOMAIN"
+    - versionName: projects/$PROJECT_ID/secrets/FIREBASE_DATABASE_URL/versions/latest
+      env: "FIREBASE_DATABASE_URL"
+    - versionName: projects/$PROJECT_ID/secrets/FIREBASE_STORAGE_BUCKET/versions/latest
+      env: "FIREBASE_STORAGE_BUCKET"
+    - versionName: projects/$PROJECT_ID/secrets/FIREBASE_PROJECT_ID/versions/latest
+      env: "FIREBASE_PROJECT_ID"
