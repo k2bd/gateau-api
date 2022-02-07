@@ -35,12 +35,13 @@ steps:
         --region europe-west1
         --platform managed
         --allow-unauthenticated
-        --set-env-vars FIREBASE_API_KEY=$$FIREBASE_API_KEY,FIREBASE_AUTH_DOMAIN=$$FIREBASE_AUTH_DOMAIN,FIREBASE_DATABASE_URL=$$FIREBASE_DATABASE_URL,FIREBASE_STORAGE_BUCKET=$$FIREBASE_STORAGE_BUCKET
+        --set-env-vars FIREBASE_API_KEY=$$FIREBASE_API_KEY,FIREBASE_AUTH_DOMAIN=$$FIREBASE_AUTH_DOMAIN,FIREBASE_DATABASE_URL=$$FIREBASE_DATABASE_URL,FIREBASE_STORAGE_BUCKET=$$FIREBASE_STORAGE_BUCKET,FIREBASE_ADMIN_CREDENTIALS=$$FIREBASE_ADMIN_CREDENTIALS
     secretEnv:
       - FIREBASE_API_KEY
       - FIREBASE_AUTH_DOMAIN
       - FIREBASE_DATABASE_URL
       - FIREBASE_STORAGE_BUCKET
+      - FIREBASE_ADMIN_CREDENTIALS
 
   # Apply domain mapping. Cheap idempotency by ignoring failures.
   - name: "gcr.io/cloud-builders/gcloud"
@@ -65,5 +66,7 @@ availableSecrets:
       env: "FIREBASE_DATABASE_URL"
     - versionName: projects/$PROJECT_ID/secrets/FIREBASE_STORAGE_BUCKET/versions/latest
       env: "FIREBASE_STORAGE_BUCKET"
+    - versionName: projects/$PROJECT_ID/secrets/FIREBASE_ADMIN_CREDENTIALS/versions/latest
+      env: "FIREBASE_ADMIN_CREDENTIALS"
     - versionName: projects/$PROJECT_ID/secrets/FIREBASE_TOKEN/versions/latest
       env: "FIREBASE_TOKEN"
