@@ -7,7 +7,6 @@ Database structure:
             "players": {
                 "{player-uid}": {
                     "uid": "{player-uid}",
-                    "name": "aaa",
                     "cartridge": "pokemon_red",
                 }
             },

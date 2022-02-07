@@ -17,7 +17,7 @@ def service() -> Generator[GateauFirebaseService, None, None]:
 
 
 @pytest.fixture
-def api_client(service) -> TestClient:
+def api_client(service: GateauFirebaseService) -> TestClient:
     """
     API test client that can interact with a temporary database
     """

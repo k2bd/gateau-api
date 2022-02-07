@@ -23,7 +23,6 @@ from gateau_api.types import GameEvent, Player, RamChangeInfo, RamEvent
 def test_set_and_get_player(service: GateauFirebaseService):
     player = Player(
         uid="player123",
-        name="John Player",
         cartridge=Cartridge.POKEMON_RED,
     )
 
@@ -92,7 +91,6 @@ def test_get_ram_subscriptions(service: GateauFirebaseService):
 
     player = Player(
         uid="player123",
-        name="John Player",
         cartridge=Cartridge.POKEMON_RED,
     )
     service.set_player("game123", player)
@@ -105,7 +103,6 @@ def test_get_ram_subscriptions(service: GateauFirebaseService):
 def test_handle_ram(service: GateauFirebaseService):
     player = Player(
         uid="player123",
-        name="John Player",
         cartridge=Cartridge.POKEMON_RED,
     )
     service.set_player("game123", player)
