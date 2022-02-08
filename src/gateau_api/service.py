@@ -28,15 +28,9 @@ Database structure:
 
 from typing import List, Set
 
-from pyrebase import initialize_app
 from pyrebase.pyrebase import Database
 
-from gateau_api.constants import (
-    FIREBASE_API_KEY,
-    FIREBASE_AUTH_DOMAIN,
-    FIREBASE_DATABASE_URL,
-    FIREBASE_STORAGE_BUCKET,
-)
+from gateau_api.firebase import pyrebase_app
 from gateau_api.game_ram.cartridge_info import ChangeMeaning
 from gateau_api.game_ram.carts import cart_info
 from gateau_api.types import GameEvent, Player, RamChangeInfo
@@ -47,16 +41,11 @@ class GateauFirebaseService:
     Service for Gateau games stored in Firebase's realtime database
     """
 
-    def __init__(self):
-        firebase = initialize_app(
-            {
-                "databaseURL": FIREBASE_DATABASE_URL,
-                "apiKey": FIREBASE_API_KEY,
-                "authDomain": FIREBASE_AUTH_DOMAIN,
-                "storageBucket": FIREBASE_STORAGE_BUCKET,
-            }
-        )
+    def __init__(self, id_token: str):
+        firebase = pyrebase_app()
         self.root = firebase.database()
+
+        self.id_token = id_token
 
     def games_db(self) -> Database:
         """
@@ -99,21 +88,21 @@ class GateauFirebaseService:
         Get a player
         """
         db = self.player_db(game_id=game_id, player_id=player_id)
-        return Player.parse_obj(db.get().val())
+        return Player.parse_obj(db.get(token=self.id_token).val())
 
     def set_player(self, game_id: str, player: Player):
         """
         Set a player in the DB
         """
         db = self.players_db(game_id=game_id)
-        db.child(player.uid).set(player.dict())
+        db.child(player.uid).set(player.dict(), token=self.id_token)
 
     def get_subscriptions(self, game_id) -> Set[str]:
         """
         Get subscriptions by meaning
         """
         db = self.subscriptions_db(game_id=game_id)
-        subscriptions = db.get().val()
+        subscriptions = db.get(token=self.id_token).val()
         return {key for key, value in subscriptions.items() if value}
 
     def add_subscriptions(self, game_id: str, meanings: Set[str]):
@@ -122,14 +111,17 @@ class GateauFirebaseService:
         """
         for meaning in meanings:
             db = self.subscriptions_db(game_id=game_id)
-            db.child(meaning).set(True)
+            db.child(meaning).set(True, token=self.id_token)
 
     def get_events(self, game_id: str) -> List[GameEvent]:
         """
         Get events from a game, in chronological order
         """
         db = self.events_db(game_id=game_id)
-        events = [GameEvent.parse_obj(event) for event in db.get().val().values()]
+        events = [
+            GameEvent.parse_obj(event)
+            for event in db.get(token=self.id_token).val().values()
+        ]
         return sorted(events, key=lambda e: e.timestamp)
 
     def add_event(self, game_id: str, event: GameEvent):
@@ -137,7 +129,7 @@ class GateauFirebaseService:
         Push a new game event
         """
         db = self.events_db(game_id=game_id)
-        db.push(event.dict())
+        db.push(event.dict(), token=self.id_token)
 
     def get_ram_subscriptions(self, game_id: str, player_id: str) -> Set[int]:
         """

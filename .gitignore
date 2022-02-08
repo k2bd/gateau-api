@@ -4,6 +4,7 @@ node_modules
 .vscode/
 
 .dev.env
+service-account.json
 
 *.DS_Store
 

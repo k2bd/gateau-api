@@ -18,8 +18,7 @@ from gateau_api.game_ram.pokemon.constants import (
 )
 from gateau_api.service import GateauFirebaseService
 from gateau_api.types import GameEvent, Player, RamChangeInfo, RamEvent
-from tests.integration.constants import EXAMPLE_USER_ID
-from tests.integration.helpers import example_auth_header
+from tests.integration.constants import EXAMPLE_ID_TOKEN, EXAMPLE_USER_ID
 
 
 def test_post_player_200(
@@ -29,7 +28,7 @@ def test_post_player_200(
     response = api_client.post(
         "/game/gameABC/players",
         json={"uid": EXAMPLE_USER_ID, "cartridge": "Pokemon Red"},
-        headers=example_auth_header(),
+        headers={"Authorization": f"Bearer {EXAMPLE_ID_TOKEN}"},
     )
     assert response.status_code == 200, response.content
 
@@ -46,7 +45,7 @@ def test_post_new_subscriptions_200(
     response = api_client.post(
         "/game/gameABC/subscriptions",
         json={"subscriptions": [SCYTHER_OWNED, MEWTWO_OWNED]},
-        headers=example_auth_header(),
+        headers={"Authorization": f"Bearer {EXAMPLE_ID_TOKEN}"},
     )
     assert response.status_code == 200, response.content
 
@@ -72,7 +71,7 @@ def test_get_ram_subscriptions_200(
 
     response = api_client.get(
         "/game/game123/ramSubscriptions",
-        headers={"player-id": EXAMPLE_USER_ID},
+        headers={"Authorization": f"Bearer {EXAMPLE_ID_TOKEN}"},
     )
 
     assert response.status_code == 200, response.content
@@ -99,7 +98,7 @@ def test_post_ram_change_200(
     with freeze_time(frozen_time):
         response = api_client.post(
             "/game/game123/ramChange",
-            headers={"player-id": EXAMPLE_USER_ID},
+            headers={"Authorization": f"Bearer {EXAMPLE_ID_TOKEN}"},
             json=change.dict(),
         )
 
