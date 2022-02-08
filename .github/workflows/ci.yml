@@ -12,6 +12,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Create service account file
+        run: |
+          echo ${{ secrets.TESTING_SERVICE_ACCOUNT }} >> service-account.base64
+          cat service-account.base64 | base64 -d > service-account.json
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
