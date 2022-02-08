@@ -1,5 +1,7 @@
+import pytest
 from freezegun import freeze_time
 
+from gateau_api.exceptions import PlayerNotFound
 from gateau_api.game_ram.carts import Cartridge
 from gateau_api.game_ram.pokemon.constants import (
     CHARMANDER_SEEN,
@@ -21,14 +23,22 @@ from gateau_api.types import GameEvent, Player, RamChangeInfo, RamEvent
 
 
 def test_set_and_get_player(service: GateauFirebaseService):
-    player = Player(
-        uid="player123",
-        cartridge=Cartridge.POKEMON_RED,
-    )
+    player = Player(uid="player123", cartridge=Cartridge.POKEMON_RED, color="#11AA55")
 
     service.set_player("game123", player)
 
     assert service.get_player("game123", "player123") == player
+
+
+def test_remove_player(service: GateauFirebaseService):
+    player = Player(uid="player123", cartridge=Cartridge.POKEMON_RED, color="#11AA55")
+
+    service.set_player("game123", player)
+
+    service.remove_player("game123", "player123")
+
+    with pytest.raises(PlayerNotFound):
+        assert service.get_player("game123", "player123")
 
 
 def test_add_and_get_subscriptions(service: GateauFirebaseService):
@@ -92,6 +102,7 @@ def test_get_ram_subscriptions(service: GateauFirebaseService):
     player = Player(
         uid="player123",
         cartridge=Cartridge.POKEMON_RED,
+        color="#CCBBAA",
     )
     service.set_player("game123", player)
 
@@ -101,10 +112,7 @@ def test_get_ram_subscriptions(service: GateauFirebaseService):
 
 
 def test_handle_ram(service: GateauFirebaseService):
-    player = Player(
-        uid="player123",
-        cartridge=Cartridge.POKEMON_RED,
-    )
+    player = Player(uid="player123", cartridge=Cartridge.POKEMON_RED, color="#098765")
     service.set_player("game123", player)
 
     change = RamChangeInfo(

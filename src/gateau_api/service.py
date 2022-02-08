@@ -8,6 +8,7 @@ Database structure:
                 "{player-uid}": {
                     "uid": "{player-uid}",
                     "cartridge": "pokemon_red",
+                    "color": "#F33F19",
                 }
             },
             "events": {
@@ -30,6 +31,7 @@ from typing import List, Set
 
 from pyrebase.pyrebase import Database
 
+from gateau_api.exceptions import PlayerNotFound
 from gateau_api.firebase import pyrebase_app
 from gateau_api.game_ram.cartridge_info import ChangeMeaning
 from gateau_api.game_ram.carts import cart_info
@@ -88,7 +90,10 @@ class GateauFirebaseService:
         Get a player
         """
         db = self.player_db(game_id=game_id, player_id=player_id)
-        return Player.parse_obj(db.get(token=self.id_token).val())
+        result = db.get(token=self.id_token).val()
+        if result is None:
+            raise PlayerNotFound(f"No player with UID {player_id} in game {game_id}")
+        return Player.parse_obj(result)
 
     def set_player(self, game_id: str, player: Player):
         """
@@ -96,6 +101,13 @@ class GateauFirebaseService:
         """
         db = self.players_db(game_id=game_id)
         db.child(player.uid).set(player.dict(), token=self.id_token)
+
+    def remove_player(self, game_id: str, player_id: str):
+        """
+        Remove a player from a game
+        """
+        db = self.players_db(game_id=game_id)
+        db.child(player_id).remove(token=self.id_token)
 
     def get_subscriptions(self, game_id) -> Set[str]:
         """
@@ -138,6 +150,8 @@ class GateauFirebaseService:
         """
         subscriptions = self.get_subscriptions(game_id=game_id)
         player = self.get_player(game_id=game_id, player_id=player_id)
+        if not player:
+            raise
         info = cart_info(player.cartridge)
         ram_addresses = {info.byte_for_meaning(meaning) for meaning in subscriptions}
 

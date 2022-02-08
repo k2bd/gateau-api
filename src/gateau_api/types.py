@@ -63,6 +63,9 @@ class Player(CamelModel):
     #: Cartridge the player is using
     cartridge: Cartridge
 
+    #: Player colour for marks
+    color: str
+
 
 def _now_iso():
     return datetime.utcnow().isoformat() + "Z"

@@ -1,6 +1,8 @@
+import pytest
 from fastapi.testclient import TestClient
 from freezegun import freeze_time
 
+from gateau_api.exceptions import PlayerNotFound
 from gateau_api.game_ram.carts import Cartridge
 from gateau_api.game_ram.pokemon.constants import (
     CHARMANDER_SEEN,
@@ -27,7 +29,11 @@ def test_post_player_200(
 ):
     response = api_client.post(
         "/game/gameABC/players",
-        json={"uid": EXAMPLE_USER_ID, "cartridge": "Pokemon Red"},
+        json={
+            "uid": EXAMPLE_USER_ID,
+            "cartridge": "Pokemon Red",
+            "color": "#123456",
+        },
         headers={"Authorization": f"Bearer {EXAMPLE_ID_TOKEN}"},
     )
     assert response.status_code == 200, response.content
@@ -35,7 +41,30 @@ def test_post_player_200(
     assert service.get_player("gameABC", EXAMPLE_USER_ID) == Player(
         uid=EXAMPLE_USER_ID,
         cartridge="Pokemon Red",
+        color="#123456",
     )
+
+
+def test_delete_player_200(
+    api_client: TestClient,
+    service: GateauFirebaseService,
+):
+    player = Player(
+        uid=EXAMPLE_USER_ID,
+        cartridge=Cartridge.POKEMON_RED,
+        color="#11AA55",
+    )
+
+    service.set_player("game123", player)
+
+    response = api_client.delete(
+        "/game/gameABC/players",
+        headers={"Authorization": f"Bearer {EXAMPLE_ID_TOKEN}"},
+    )
+    assert response.status_code == 200, response.content
+
+    with pytest.raises(PlayerNotFound):
+        assert service.get_player("gameABC", EXAMPLE_USER_ID)
 
 
 def test_post_new_subscriptions_200(
@@ -66,6 +95,7 @@ def test_get_ram_subscriptions_200(
     player = Player(
         uid=EXAMPLE_USER_ID,
         cartridge=Cartridge.POKEMON_RED,
+        color="#ABCDEF",
     )
     service.set_player("game123", player)
 
@@ -85,6 +115,7 @@ def test_post_ram_change_200(
     player = Player(
         uid=EXAMPLE_USER_ID,
         cartridge=Cartridge.POKEMON_RED,
+        color="#123ABC",
     )
     service.set_player("game123", player)
 
