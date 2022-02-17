@@ -25,7 +25,7 @@ from gateau_api.types import GameEvent, Player, RamChangeInfo, RamEvent
 def test_set_and_get_player(service: GateauFirebaseService):
     player = Player(uid="player123", cartridge=Cartridge.POKEMON_RED, color="#11AA55")
 
-    service.set_player("game123", player)
+    service.join_game("game123", player)
 
     assert service.get_player("game123", "player123") == player
 
@@ -33,7 +33,7 @@ def test_set_and_get_player(service: GateauFirebaseService):
 def test_remove_player(service: GateauFirebaseService):
     player = Player(uid="player123", cartridge=Cartridge.POKEMON_RED, color="#11AA55")
 
-    service.set_player("game123", player)
+    service.join_game("game123", player)
 
     service.remove_player("game123", "player123")
 
@@ -104,7 +104,7 @@ def test_get_ram_subscriptions(service: GateauFirebaseService):
         cartridge=Cartridge.POKEMON_RED,
         color="#CCBBAA",
     )
-    service.set_player("game123", player)
+    service.join_game("game123", player)
 
     ram_subscriptions = service.get_ram_subscriptions("game123", "player123")
 
@@ -113,7 +113,7 @@ def test_get_ram_subscriptions(service: GateauFirebaseService):
 
 def test_handle_ram(service: GateauFirebaseService):
     player = Player(uid="player123", cartridge=Cartridge.POKEMON_RED, color="#098765")
-    service.set_player("game123", player)
+    service.join_game("game123", player)
 
     change = RamChangeInfo(
         frame=123,

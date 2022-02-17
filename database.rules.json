@@ -1,6 +1,14 @@
 {
     "rules": {
-        ".read": true,
-        ".write": "auth != null"
+        "games": {
+            ".read": true,
+            ".write": "auth != null"
+        },
+        "desktopJoinTokens": {
+            "": {
+                ".read": false,
+                ".write": "$uid === auth.uid",
+            }
+        }
     }
 }

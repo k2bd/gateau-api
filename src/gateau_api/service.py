@@ -23,6 +23,9 @@ Database structure:
                 "{meaning}": true,
             },
         }
+    },
+    "desktopJoinTokens": {
+        "{player-uid}": "some-game-id",
     }
 }
 """
@@ -95,7 +98,7 @@ class GateauFirebaseService:
             raise PlayerNotFound(f"No player with UID {player_id} in game {game_id}")
         return Player.parse_obj(result)
 
-    def set_player(self, game_id: str, player: Player):
+    def join_game(self, game_id: str, player: Player):
         """
         Set a player in the DB
         """

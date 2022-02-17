@@ -55,7 +55,7 @@ def test_delete_player_200(
         color="#11AA55",
     )
 
-    service.set_player("game123", player)
+    service.join_game("game123", player)
 
     response = api_client.delete(
         "/game/gameABC/players",
@@ -97,7 +97,7 @@ def test_get_ram_subscriptions_200(
         cartridge=Cartridge.POKEMON_RED,
         color="#ABCDEF",
     )
-    service.set_player("game123", player)
+    service.join_game("game123", player)
 
     response = api_client.get(
         "/game/game123/ramSubscriptions",
@@ -117,7 +117,7 @@ def test_post_ram_change_200(
         cartridge=Cartridge.POKEMON_RED,
         color="#123ABC",
     )
-    service.set_player("game123", player)
+    service.join_game("game123", player)
 
     change = RamChangeInfo(
         frame=123,
