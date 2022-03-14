@@ -67,6 +67,14 @@ class Player(CamelModel):
     color: str
 
 
+class NamedPlayer(Player):
+    """
+    A player with a name
+    """
+
+    name: str
+
+
 def _now_iso():
     return datetime.utcnow().isoformat() + "Z"
 

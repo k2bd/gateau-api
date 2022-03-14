@@ -33,13 +33,14 @@ Database structure:
 from dataclasses import dataclass, field
 from typing import List, Set
 
+from firebasil.auth import AuthClient
 from firebasil.rtdb import Rtdb, RtdbNode
 
-from gateau_api.constants import FIREBASE_DATABASE_URL
+from gateau_api.constants import FIREBASE_API_KEY, FIREBASE_DATABASE_URL
 from gateau_api.exceptions import PlayerNotFound
 from gateau_api.game_ram.cartridge_info import ChangeMeaning
 from gateau_api.game_ram.carts import cart_info
-from gateau_api.types import GameEvent, Player, RamChangeInfo
+from gateau_api.types import GameEvent, NamedPlayer, Player, RamChangeInfo
 
 
 @dataclass
@@ -65,6 +66,13 @@ class GateauFirebaseService:
         compare=False,
     )
 
+    auth_client: AuthClient = field(
+        init=False,
+        repr=False,
+        hash=False,
+        compare=False,
+    )
+
     async def __aenter__(self):
         self._rtdb = Rtdb(
             database_url=FIREBASE_DATABASE_URL,
@@ -72,11 +80,18 @@ class GateauFirebaseService:
         )
         self.db_root = await self._rtdb.__aenter__()
 
+        self.auth_client = await AuthClient(api_key=FIREBASE_API_KEY).__aenter__()
+
         return self
 
     async def __aexit__(self, *err):
         self.db_root = None
+
+        await self.auth_client.__aexit__(*err)
         await self._rtdb.__aexit__(*err)
+
+        self.auth_client = None
+        self._rtdb = None
 
     def games_db(self) -> RtdbNode:
         """
@@ -114,7 +129,7 @@ class GateauFirebaseService:
         """
         return self.game_db(game_id=game_id) / "subscriptions"
 
-    async def get_player(self, game_id: str, player_id: str) -> Player:
+    async def get_player(self, game_id: str, player_id: str) -> NamedPlayer:
         """
         Get a player
         """
@@ -122,14 +137,23 @@ class GateauFirebaseService:
         result = await db.get()
         if result is None:
             raise PlayerNotFound(f"No player with UID {player_id} in game {game_id}")
-        return Player.parse_obj(result)
+        return NamedPlayer.parse_obj(result)
 
     async def join_game(self, game_id: str, player: Player):
         """
         Set a player in the DB
         """
         db = self.players_db(game_id=game_id)
-        await (db / player.uid).set(player.dict())
+
+        player_info_raw = await self.auth_client.get_user_data(id_token=self.id_token)
+        if len(player_info_raw.users) == 0:
+            raise ValueError("Invalid player info")
+        player_info = player_info_raw.users[0]
+        display_name = player_info.display_name
+
+        player_set = NamedPlayer(**{**player.dict(), "name": display_name})
+
+        await (db / player.uid).set(player_set.dict())
 
     async def remove_player(self, game_id: str, player_id: str):
         """

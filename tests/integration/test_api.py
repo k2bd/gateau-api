@@ -20,7 +20,8 @@ from gateau_api.game_ram.pokemon.constants import (
     ZUBAT_OWNED,
 )
 from gateau_api.service import GateauFirebaseService
-from gateau_api.types import GameEvent, Player, RamChangeInfo, RamEvent
+from gateau_api.types import GameEvent, NamedPlayer, Player, RamChangeInfo, RamEvent
+from tests.integration.constants import EXAMPLE_USER_DISPLAY_NAME
 
 
 @pytest.mark.asyncio
@@ -40,10 +41,11 @@ async def test_post_player_200(
     )
     assert response.status_code == 200, response.content
 
-    assert await service.get_player("gameABC", example_user.local_id) == Player(
+    assert await service.get_player("gameABC", example_user.local_id) == NamedPlayer(
         uid=example_user.local_id,
         cartridge="Pokemon Red",
         color="#123456",
+        name=EXAMPLE_USER_DISPLAY_NAME,
     )
 
 

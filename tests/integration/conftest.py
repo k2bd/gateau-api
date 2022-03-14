@@ -6,6 +6,7 @@ from firebasil.auth import AuthClient
 from firebasil.auth.types import SignUpUser
 
 from gateau_api.api import app
+from gateau_api.constants import FIREBASE_API_KEY
 from gateau_api.service import GateauFirebaseService
 from tests.integration.constants import (
     EXAMPLE_USER_DISPLAY_NAME,
@@ -22,7 +23,7 @@ async def auth_client() -> AsyncGenerator[AuthClient, None]:
         raise RuntimeError(
             "Please set the FIREBASE_AUTH_EMULATOR_HOST environment variable"
         )
-    async with AuthClient(api_key="any-fake-key") as auth_client:
+    async with AuthClient(api_key=FIREBASE_API_KEY) as auth_client:
         yield auth_client
 
 
