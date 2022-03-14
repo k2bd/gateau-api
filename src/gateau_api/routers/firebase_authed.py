@@ -6,11 +6,11 @@ import logging
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi_camelcase import CamelModel
 
 from gateau_api.dependencies import get_service, get_user_uid
 from gateau_api.service import GateauFirebaseService
 from gateau_api.types import Player, RamChangeInfo, Subscription
-from fastapi_camelcase import CamelModel
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ async def join_game(
             status_code=401,
             detail="Cannot add someone else to the game",
         )
-    service.join_game(game_id=gameId, player=player)
+    await service.join_game(game_id=gameId, player=player)
 
 
 @router.delete("/game/{gameId}/players")
@@ -46,7 +46,7 @@ async def leave_game(
     """
     From the web app, leave a game
     """
-    service.remove_player(game_id=gameId, player_id=player_id)
+    await service.remove_player(game_id=gameId, player_id=player_id)
 
 
 class NewSubscriptions(CamelModel):
@@ -62,7 +62,10 @@ async def post_subsctiptions(
     """
     From the web app, post new subscriptions
     """
-    service.add_subscriptions(game_id=gameId, meanings=set(subscriptions.subscriptions))
+    await service.add_subscriptions(
+        game_id=gameId,
+        meanings=set(subscriptions.subscriptions),
+    )
 
 
 # ---- Desktop app routes ----
@@ -77,7 +80,10 @@ async def get_ram_subscription(
     """
     From the desktop client, get RAM addresses to subscribe to
     """
-    subscriptions = service.get_ram_subscriptions(game_id=gameId, player_id=player_id)
+    subscriptions = await service.get_ram_subscriptions(
+        game_id=gameId,
+        player_id=player_id,
+    )
     return Subscription(ram_addresses=sorted(subscriptions))
 
 
@@ -91,4 +97,8 @@ async def post_ram_change(
     """
     From the desktop client, post a RAM update
     """
-    service.handle_ram(game_id=gameId, player_id=player_id, change_info=change)
+    await service.handle_ram(
+        game_id=gameId,
+        player_id=player_id,
+        change_info=change,
+    )

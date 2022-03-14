@@ -1,5 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
+from firebasil.auth.types import SignUpUser
 from freezegun import freeze_time
 
 from gateau_api.exceptions import PlayerNotFound
@@ -20,104 +21,113 @@ from gateau_api.game_ram.pokemon.constants import (
 )
 from gateau_api.service import GateauFirebaseService
 from gateau_api.types import GameEvent, Player, RamChangeInfo, RamEvent
-from tests.integration.constants import EXAMPLE_ID_TOKEN, EXAMPLE_USER_ID
 
 
-def test_post_player_200(
+@pytest.mark.asyncio
+async def test_post_player_200(
     api_client: TestClient,
     service: GateauFirebaseService,
+    example_user: SignUpUser,
 ):
     response = api_client.post(
         "/game/gameABC/players",
         json={
-            "uid": EXAMPLE_USER_ID,
+            "uid": example_user.local_id,
             "cartridge": "Pokemon Red",
             "color": "#123456",
         },
-        headers={"Authorization": f"Bearer {EXAMPLE_ID_TOKEN}"},
+        headers={"Authorization": f"Bearer {example_user.id_token}"},
     )
     assert response.status_code == 200, response.content
 
-    assert service.get_player("gameABC", EXAMPLE_USER_ID) == Player(
-        uid=EXAMPLE_USER_ID,
+    assert await service.get_player("gameABC", example_user.local_id) == Player(
+        uid=example_user.local_id,
         cartridge="Pokemon Red",
         color="#123456",
     )
 
 
-def test_delete_player_200(
+@pytest.mark.asyncio
+async def test_delete_player_200(
     api_client: TestClient,
     service: GateauFirebaseService,
+    example_user: SignUpUser,
 ):
     player = Player(
-        uid=EXAMPLE_USER_ID,
+        uid=example_user.local_id,
         cartridge=Cartridge.POKEMON_RED,
         color="#11AA55",
     )
 
-    service.join_game("game123", player)
+    await service.join_game("game123", player)
 
     response = api_client.delete(
         "/game/gameABC/players",
-        headers={"Authorization": f"Bearer {EXAMPLE_ID_TOKEN}"},
+        headers={"Authorization": f"Bearer {example_user.id_token}"},
     )
     assert response.status_code == 200, response.content
 
     with pytest.raises(PlayerNotFound):
-        assert service.get_player("gameABC", EXAMPLE_USER_ID)
+        assert await service.get_player("gameABC", example_user.local_id)
 
 
-def test_post_new_subscriptions_200(
+@pytest.mark.asyncio
+async def test_post_new_subscriptions_200(
     api_client: TestClient,
     service: GateauFirebaseService,
+    example_user: SignUpUser,
 ):
     response = api_client.post(
         "/game/gameABC/subscriptions",
         json={"subscriptions": [SCYTHER_OWNED, MEWTWO_OWNED]},
-        headers={"Authorization": f"Bearer {EXAMPLE_ID_TOKEN}"},
+        headers={"Authorization": f"Bearer {example_user.id_token}"},
     )
     assert response.status_code == 200, response.content
 
-    assert service.get_subscriptions("gameABC") == {SCYTHER_OWNED, MEWTWO_OWNED}
+    assert await service.get_subscriptions("gameABC") == {SCYTHER_OWNED, MEWTWO_OWNED}
 
 
-def test_get_ram_subscriptions_200(
+@pytest.mark.asyncio
+async def test_get_ram_subscriptions_200(
     api_client: TestClient,
     service: GateauFirebaseService,
+    example_user: SignUpUser,
 ):
     subscriptions = {
         CHARMANDER_SEEN,
         CHARMELEON_SEEN,
         MEWTWO_OWNED,
     }
-    service.add_subscriptions("game123", subscriptions)
+    await service.add_subscriptions("game123", subscriptions)
 
     player = Player(
-        uid=EXAMPLE_USER_ID,
+        uid=example_user.local_id,
         cartridge=Cartridge.POKEMON_RED,
         color="#ABCDEF",
     )
-    service.join_game("game123", player)
+    await service.join_game("game123", player)
 
     response = api_client.get(
         "/game/game123/ramSubscriptions",
-        headers={"Authorization": f"Bearer {EXAMPLE_ID_TOKEN}"},
+        headers={"Authorization": f"Bearer {example_user.id_token}"},
     )
 
     assert response.status_code == 200, response.content
     assert response.json() == {"ramAddresses": [0xD309, 0xD30A]}
 
 
-def test_post_ram_change_200(
+@pytest.mark.asyncio
+async def test_post_ram_change_200(
     api_client: TestClient,
     service: GateauFirebaseService,
+    example_user: SignUpUser,
 ):
     player = Player(
-        uid=EXAMPLE_USER_ID,
+        uid=example_user.local_id,
         cartridge=Cartridge.POKEMON_RED,
         color="#123ABC",
     )
-    service.join_game("game123", player)
+    await service.join_game("game123", player)
 
     change = RamChangeInfo(
         frame=123,
@@ -129,59 +139,59 @@ def test_post_ram_change_200(
     with freeze_time(frozen_time):
         response = api_client.post(
             "/game/game123/ramChange",
-            headers={"Authorization": f"Bearer {EXAMPLE_ID_TOKEN}"},
+            headers={"Authorization": f"Bearer {example_user.id_token}"},
             json=change.dict(),
         )
 
     assert response.status_code == 200, response.content
 
-    assert service.get_events("game123") == [
+    assert await service.get_events("game123") == [
         GameEvent(
             meaning=VENONAT_OWNED,
             value=True,
-            player_id=EXAMPLE_USER_ID,
+            player_id=example_user.local_id,
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=PARASECT_OWNED,
             value=True,
-            player_id=EXAMPLE_USER_ID,
+            player_id=example_user.local_id,
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=PARAS_OWNED,
             value=True,
-            player_id=EXAMPLE_USER_ID,
+            player_id=example_user.local_id,
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=VILEPLUME_OWNED,
             value=True,
-            player_id=EXAMPLE_USER_ID,
+            player_id=example_user.local_id,
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=GLOOM_OWNED,
             value=True,
-            player_id=EXAMPLE_USER_ID,
+            player_id=example_user.local_id,
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=ODDISH_OWNED,
             value=True,
-            player_id=EXAMPLE_USER_ID,
+            player_id=example_user.local_id,
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=GOLBAT_OWNED,
             value=True,
-            player_id=EXAMPLE_USER_ID,
+            player_id=example_user.local_id,
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=ZUBAT_OWNED,
             value=True,
-            player_id=EXAMPLE_USER_ID,
+            player_id=example_user.local_id,
             timestamp=frozen_time,
         ),
     ]
