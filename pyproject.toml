@@ -32,15 +32,15 @@ multi_line_output = 3
 
 [tool.poe.tasks]
 autoformat.sequence = [
-    {cmd = "black src tests"},
-    {cmd = "isort src tests"},
+    {cmd = "black src tests scripts"},
+    {cmd = "isort src tests scripts"},
 ]
 
 lint.sequence = [
-    {cmd = "black --check -v src tests"},
-    {cmd = "isort --check -v src tests"},
-    {cmd = "flake8 src tests"},
-    {cmd = "mypy --pretty src tests"},
+    {cmd = "black --check -v src tests scripts"},
+    {cmd = "isort --check -v src tests scripts"},
+    {cmd = "flake8 src tests scripts"},
+    {cmd = "mypy --pretty src tests scripts"},
 ]
 
 test.sequence = ["unit", "integration"]
@@ -71,7 +71,7 @@ sequence = [
 FIREBASE_DATABASE_URL = "http://127.0.0.1:9000"
 FIREBASE_AUTH_EMULATOR_HOST = "http://127.0.0.1:9099"
 GCLOUD_PROJECT = "demo-gateau-local"
-TESTING_PROJECT_ID = "demo-gateau-test"
+TESTING_PROJECT_ID = "demo-gateau-local"
 FIREBASE_API_KEY = "any-api-key"
 
 
