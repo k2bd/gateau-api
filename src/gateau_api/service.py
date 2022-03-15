@@ -40,7 +40,7 @@ from gateau_api.constants import FIREBASE_API_KEY, FIREBASE_DATABASE_URL
 from gateau_api.exceptions import PlayerNotFound
 from gateau_api.game_ram.cartridge_info import ChangeMeaning
 from gateau_api.game_ram.carts import cart_info
-from gateau_api.types import GameEvent, NamedPlayer, Player, RamChangeInfo
+from gateau_api.types import GameEvent, Player, RamChangeInfo
 
 
 @dataclass
@@ -129,7 +129,7 @@ class GateauFirebaseService:
         """
         return self.game_db(game_id=game_id) / "subscriptions"
 
-    async def get_player(self, game_id: str, player_id: str) -> NamedPlayer:
+    async def get_player(self, game_id: str, player_id: str) -> Player:
         """
         Get a player
         """
@@ -137,7 +137,7 @@ class GateauFirebaseService:
         result = await db.get()
         if result is None:
             raise PlayerNotFound(f"No player with UID {player_id} in game {game_id}")
-        return NamedPlayer.parse_obj(result)
+        return Player.parse_obj(result)
 
     async def join_game(self, game_id: str, player: Player):
         """
@@ -145,15 +145,7 @@ class GateauFirebaseService:
         """
         db = self.players_db(game_id=game_id)
 
-        player_info_raw = await self.auth_client.get_user_data(id_token=self.id_token)
-        if len(player_info_raw.users) == 0:
-            raise ValueError("Invalid player info")
-        player_info = player_info_raw.users[0]
-        display_name = player_info.display_name
-
-        player_set = NamedPlayer(**{**player.dict(), "name": display_name})
-
-        await (db / player.uid).set(player_set.dict())
+        await (db / player.uid).set(player.dict())
 
     async def remove_player(self, game_id: str, player_id: str):
         """

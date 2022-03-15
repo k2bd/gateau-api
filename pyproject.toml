@@ -32,15 +32,15 @@ multi_line_output = 3
 
 [tool.poe.tasks]
 autoformat.sequence = [
-    {cmd = "black src tests scripts"},
-    {cmd = "isort src tests scripts"},
+    {cmd = "black src tests"},
+    {cmd = "isort src tests"},
 ]
 
 lint.sequence = [
-    {cmd = "black --check -v src tests scripts"},
-    {cmd = "isort --check -v src tests scripts"},
-    {cmd = "flake8 src tests scripts"},
-    {cmd = "mypy --pretty src tests scripts"},
+    {cmd = "black --check -v src tests"},
+    {cmd = "isort --check -v src tests"},
+    {cmd = "flake8 src tests"},
+    {cmd = "mypy --pretty src tests"},
 ]
 
 test.sequence = ["unit", "integration"]

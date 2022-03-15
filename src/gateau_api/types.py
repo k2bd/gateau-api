@@ -66,13 +66,8 @@ class Player(CamelModel):
     #: Player colour for marks
     color: str
 
-
-class NamedPlayer(Player):
-    """
-    A player with a name
-    """
-
-    name: str
+    #: Display name of the player
+    name: Optional[str]
 
 
 def _now_iso():

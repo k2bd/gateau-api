@@ -1,3 +1,5 @@
+from typing import Optional
+
 import pytest
 from fastapi.testclient import TestClient
 from firebasil.auth.types import SignUpUser
@@ -20,15 +22,17 @@ from gateau_api.game_ram.pokemon.constants import (
     ZUBAT_OWNED,
 )
 from gateau_api.service import GateauFirebaseService
-from gateau_api.types import GameEvent, NamedPlayer, Player, RamChangeInfo, RamEvent
+from gateau_api.types import GameEvent, Player, RamChangeInfo, RamEvent
 from tests.integration.constants import EXAMPLE_USER_DISPLAY_NAME
 
 
+@pytest.mark.parametrize("player_name", [EXAMPLE_USER_DISPLAY_NAME, None])
 @pytest.mark.asyncio
 async def test_post_player_200(
     api_client: TestClient,
     service: GateauFirebaseService,
     example_user: SignUpUser,
+    player_name: Optional[str],
 ):
     response = api_client.post(
         "/game/gameABC/players",
@@ -36,16 +40,17 @@ async def test_post_player_200(
             "uid": example_user.local_id,
             "cartridge": "Pokemon Red",
             "color": "#123456",
+            "name": player_name,
         },
         headers={"Authorization": f"Bearer {example_user.id_token}"},
     )
     assert response.status_code == 200, response.content
 
-    assert await service.get_player("gameABC", example_user.local_id) == NamedPlayer(
+    assert await service.get_player("gameABC", example_user.local_id) == Player(
         uid=example_user.local_id,
         cartridge="Pokemon Red",
         color="#123456",
-        name=EXAMPLE_USER_DISPLAY_NAME,
+        name=player_name,
     )
 
 
@@ -59,6 +64,7 @@ async def test_delete_player_200(
         uid=example_user.local_id,
         cartridge=Cartridge.POKEMON_RED,
         color="#11AA55",
+        name=EXAMPLE_USER_DISPLAY_NAME,
     )
 
     await service.join_game("game123", player)
@@ -106,6 +112,7 @@ async def test_get_ram_subscriptions_200(
         uid=example_user.local_id,
         cartridge=Cartridge.POKEMON_RED,
         color="#ABCDEF",
+        name=EXAMPLE_USER_DISPLAY_NAME,
     )
     await service.join_game("game123", player)
 
@@ -128,6 +135,7 @@ async def test_post_ram_change_200(
         uid=example_user.local_id,
         cartridge=Cartridge.POKEMON_RED,
         color="#123ABC",
+        name=EXAMPLE_USER_DISPLAY_NAME,
     )
     await service.join_game("game123", player)
 

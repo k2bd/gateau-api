@@ -1,3 +1,5 @@
+from typing import Optional
+
 import pytest
 from firebasil.auth.types import SignUpUser
 from freezegun import freeze_time
@@ -20,29 +22,27 @@ from gateau_api.game_ram.pokemon.constants import (
     ZUBAT_OWNED,
 )
 from gateau_api.service import GateauFirebaseService
-from gateau_api.types import GameEvent, NamedPlayer, Player, RamChangeInfo, RamEvent
+from gateau_api.types import GameEvent, Player, RamChangeInfo, RamEvent
 from tests.integration.constants import EXAMPLE_USER_DISPLAY_NAME
 
 
+@pytest.mark.parametrize("player_name", [EXAMPLE_USER_DISPLAY_NAME, None])
 @pytest.mark.asyncio
 async def test_set_and_get_player(
     service: GateauFirebaseService,
     example_user: SignUpUser,
+    player_name: Optional[str],
 ):
     player = Player(
         uid=example_user.local_id,
         cartridge=Cartridge.POKEMON_RED,
         color="#11AA55",
+        name=player_name,
     )
 
     await service.join_game("game123", player)
 
-    assert await service.get_player("game123", example_user.local_id) == NamedPlayer(
-        uid=example_user.local_id,
-        cartridge=Cartridge.POKEMON_RED,
-        color="#11AA55",
-        name=EXAMPLE_USER_DISPLAY_NAME,
-    )
+    assert await service.get_player("game123", example_user.local_id) == player
 
 
 @pytest.mark.asyncio
