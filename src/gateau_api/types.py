@@ -69,6 +69,9 @@ class Player(CamelModel):
     #: Display name of the player
     name: Optional[str]
 
+    #: Photo URL of the player
+    photo_url: Optional[str]
+
 
 def _now_iso():
     return datetime.utcnow().isoformat() + "Z"

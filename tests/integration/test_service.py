@@ -23,21 +23,27 @@ from gateau_api.game_ram.pokemon.constants import (
 )
 from gateau_api.service import GateauFirebaseService
 from gateau_api.types import GameEvent, Player, RamChangeInfo, RamEvent
-from tests.integration.constants import EXAMPLE_USER_DISPLAY_NAME
+from tests.integration.constants import (
+    EXAMPLE_USER_DISPLAY_NAME,
+    EXAMPLE_USER_PHOTO_URL,
+)
 
 
 @pytest.mark.parametrize("player_name", [EXAMPLE_USER_DISPLAY_NAME, None])
+@pytest.mark.parametrize("photo_url", [EXAMPLE_USER_PHOTO_URL, None])
 @pytest.mark.asyncio
 async def test_set_and_get_player(
     service: GateauFirebaseService,
     example_user: SignUpUser,
     player_name: Optional[str],
+    photo_url: Optional[str],
 ):
     player = Player(
         uid=example_user.local_id,
         cartridge=Cartridge.POKEMON_RED,
         color="#11AA55",
         name=player_name,
+        photo_url=photo_url,
     )
 
     await service.join_game("game123", player)
