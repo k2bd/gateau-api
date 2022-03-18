@@ -3,15 +3,8 @@ import json
 from typing import Any, Dict
 
 import firebase_admin
-from pyrebase import initialize_app
 
-from gateau_api.constants import (
-    FIREBASE_ADMIN_CREDENTIALS,
-    FIREBASE_API_KEY,
-    FIREBASE_AUTH_DOMAIN,
-    FIREBASE_DATABASE_URL,
-    FIREBASE_STORAGE_BUCKET,
-)
+from gateau_api.constants import FIREBASE_ADMIN_CREDENTIALS, TESTING_PROJECT_ID
 
 
 def service_account_info() -> Dict[str, Any]:
@@ -19,17 +12,15 @@ def service_account_info() -> Dict[str, Any]:
 
 
 def firebase_init_app():
+    """
+    Initialize the admin app, using a testing project ID if we're emulating.
+    """
+    if TESTING_PROJECT_ID:
+        firebase_admin.initialize_app(options={"projectId": TESTING_PROJECT_ID})
+        return
+
+    # Production
     creds = firebase_admin.credentials.Certificate(service_account_info())
 
     if not firebase_admin._apps:
         firebase_admin.initialize_app(creds)
-
-
-def pyrebase_app():
-    config = {
-        "databaseURL": FIREBASE_DATABASE_URL,
-        "apiKey": FIREBASE_API_KEY,
-        "authDomain": FIREBASE_AUTH_DOMAIN,
-        "storageBucket": FIREBASE_STORAGE_BUCKET,
-    }
-    return initialize_app(config)

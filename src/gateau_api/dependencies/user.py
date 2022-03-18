@@ -7,14 +7,23 @@ from gateau_api.firebase import firebase_init_app
 firebase_init_app()
 
 
-async def get_user_uid(
-    credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer()),
-):
-    token = credentials.credentials
-
+def _verify_token(id_token: str):
     try:
-        user = auth.verify_id_token(id_token=token)
+        return auth.verify_id_token(id_token=id_token)
     except Exception as e:
         raise HTTPException(status_code=401, detail=str(e)) from e
 
+
+async def get_user_id_token(
+    credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer()),
+):
+    id_token = credentials.credentials
+    _verify_token(id_token=id_token)
+    return id_token
+
+
+async def get_user_uid(
+    id_token: str = Depends(get_user_id_token),
+):
+    user = _verify_token(id_token=id_token)
     return user["uid"]

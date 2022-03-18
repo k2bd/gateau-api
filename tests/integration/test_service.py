@@ -1,4 +1,7 @@
+from typing import Optional
+
 import pytest
+from firebasil.auth.types import SignUpUser
 from freezegun import freeze_time
 
 from gateau_api.exceptions import PlayerNotFound
@@ -20,44 +23,72 @@ from gateau_api.game_ram.pokemon.constants import (
 )
 from gateau_api.service import GateauFirebaseService
 from gateau_api.types import GameEvent, Player, RamChangeInfo, RamEvent
+from tests.integration.constants import (
+    EXAMPLE_USER_DISPLAY_NAME,
+    EXAMPLE_USER_PHOTO_URL,
+)
 
 
-def test_set_and_get_player(service: GateauFirebaseService):
-    player = Player(uid="player123", cartridge=Cartridge.POKEMON_RED, color="#11AA55")
+@pytest.mark.parametrize("player_name", [EXAMPLE_USER_DISPLAY_NAME, None])
+@pytest.mark.parametrize("photo_url", [EXAMPLE_USER_PHOTO_URL, None])
+@pytest.mark.asyncio
+async def test_set_and_get_player(
+    service: GateauFirebaseService,
+    example_user: SignUpUser,
+    player_name: Optional[str],
+    photo_url: Optional[str],
+):
+    player = Player(
+        uid=example_user.local_id,
+        cartridge=Cartridge.POKEMON_RED,
+        color="#11AA55",
+        name=player_name,
+        photo_url=photo_url,
+    )
 
-    service.set_player("game123", player)
+    await service.join_game("game123", player)
 
-    assert service.get_player("game123", "player123") == player
+    assert await service.get_player("game123", example_user.local_id) == player
 
 
-def test_remove_player(service: GateauFirebaseService):
-    player = Player(uid="player123", cartridge=Cartridge.POKEMON_RED, color="#11AA55")
+@pytest.mark.asyncio
+async def test_remove_player(
+    service: GateauFirebaseService,
+    example_user: SignUpUser,
+):
+    player = Player(
+        uid=example_user.local_id, cartridge=Cartridge.POKEMON_RED, color="#11AA55"
+    )
 
-    service.set_player("game123", player)
+    await service.join_game("game123", player)
 
-    service.remove_player("game123", "player123")
+    await service.remove_player("game123", example_user.local_id)
 
     with pytest.raises(PlayerNotFound):
-        assert service.get_player("game123", "player123")
+        assert await service.get_player("game123", example_user.local_id)
 
 
-def test_add_and_get_subscriptions(service: GateauFirebaseService):
+@pytest.mark.asyncio
+async def test_add_and_get_subscriptions(
+    service: GateauFirebaseService,
+    example_user: SignUpUser,
+):
     subscriptions = {
         CHARMANDER_SEEN,
         MEWTWO_OWNED,
     }
-    service.add_subscriptions("game123", subscriptions)
+    await service.add_subscriptions("game123", subscriptions)
 
-    assert service.get_subscriptions("game123") == subscriptions
+    assert await service.get_subscriptions("game123") == subscriptions
 
     new_subscriptions = {
         KAKUNA_OWNED,
         MEWTWO_OWNED,
         SCYTHER_SEEN,
     }
-    service.add_subscriptions("game123", new_subscriptions)
+    await service.add_subscriptions("game123", new_subscriptions)
 
-    assert service.get_subscriptions("game123") == {
+    assert await service.get_subscriptions("game123") == {
         CHARMANDER_SEEN,
         MEWTWO_OWNED,
         KAKUNA_OWNED,
@@ -65,7 +96,11 @@ def test_add_and_get_subscriptions(service: GateauFirebaseService):
     }
 
 
-def test_add_and_get_events(service: GateauFirebaseService):
+@pytest.mark.asyncio
+async def test_add_and_get_events(
+    service: GateauFirebaseService,
+    example_user: SignUpUser,
+):
     event3 = GameEvent(
         meaning=KAKUNA_OWNED,
         value=True,
@@ -86,34 +121,46 @@ def test_add_and_get_events(service: GateauFirebaseService):
     )
 
     for event in [event3, event1, event2]:
-        service.add_event("game123", event)
+        await service.add_event("game123", event)
 
-    assert service.get_events("game123") == [event1, event2, event3]
+    assert await service.get_events("game123") == [event1, event2, event3]
 
 
-def test_get_ram_subscriptions(service: GateauFirebaseService):
+@pytest.mark.asyncio
+async def test_get_ram_subscriptions(
+    service: GateauFirebaseService,
+    example_user: SignUpUser,
+):
     subscriptions = {
         CHARMANDER_SEEN,
         CHARMELEON_SEEN,
         MEWTWO_OWNED,
     }
-    service.add_subscriptions("game123", subscriptions)
+    await service.add_subscriptions("game123", subscriptions)
 
     player = Player(
-        uid="player123",
+        uid=example_user.local_id,
         cartridge=Cartridge.POKEMON_RED,
         color="#CCBBAA",
     )
-    service.set_player("game123", player)
+    await service.join_game("game123", player)
 
-    ram_subscriptions = service.get_ram_subscriptions("game123", "player123")
+    ram_subscriptions = await service.get_ram_subscriptions(
+        "game123", example_user.local_id
+    )
 
     assert ram_subscriptions == {0xD309, 0xD30A}
 
 
-def test_handle_ram(service: GateauFirebaseService):
-    player = Player(uid="player123", cartridge=Cartridge.POKEMON_RED, color="#098765")
-    service.set_player("game123", player)
+@pytest.mark.asyncio
+async def test_handle_ram(
+    service: GateauFirebaseService,
+    example_user: SignUpUser,
+):
+    player = Player(
+        uid=example_user.local_id, cartridge=Cartridge.POKEMON_RED, color="#098765"
+    )
+    await service.join_game("game123", player)
 
     change = RamChangeInfo(
         frame=123,
@@ -123,55 +170,55 @@ def test_handle_ram(service: GateauFirebaseService):
 
     frozen_time = "2020-01-02T03:04:05Z"
     with freeze_time(frozen_time):
-        service.handle_ram("game123", "player123", change_info=change)
+        await service.handle_ram("game123", example_user.local_id, change_info=change)
 
-    assert service.get_events("game123") == [
+    assert await service.get_events("game123") == [
         GameEvent(
             meaning=VENONAT_OWNED,
             value=True,
-            player_id="player123",
+            player_id=example_user.local_id,
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=PARASECT_OWNED,
             value=True,
-            player_id="player123",
+            player_id=example_user.local_id,
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=PARAS_OWNED,
             value=True,
-            player_id="player123",
+            player_id=example_user.local_id,
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=VILEPLUME_OWNED,
             value=True,
-            player_id="player123",
+            player_id=example_user.local_id,
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=GLOOM_OWNED,
             value=True,
-            player_id="player123",
+            player_id=example_user.local_id,
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=ODDISH_OWNED,
             value=True,
-            player_id="player123",
+            player_id=example_user.local_id,
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=GOLBAT_OWNED,
             value=True,
-            player_id="player123",
+            player_id=example_user.local_id,
             timestamp=frozen_time,
         ),
         GameEvent(
             meaning=ZUBAT_OWNED,
             value=True,
-            player_id="player123",
+            player_id=example_user.local_id,
             timestamp=frozen_time,
         ),
     ]
