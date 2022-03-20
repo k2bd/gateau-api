@@ -12,6 +12,8 @@ from gateau_api.dependencies import get_service, get_user_uid
 from gateau_api.service import GateauFirebaseService
 from gateau_api.types import Player, RamChangeInfo, Subscription
 
+logging.basicConfig(level=logging.INFO)
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(dependencies=[Depends(get_user_uid)])
@@ -97,6 +99,9 @@ async def post_ram_change(
     """
     From the desktop client, post a RAM update
     """
+    logger.info(gameId)
+    logger.info(player_id)
+    logger.info(change)
     await service.handle_ram(
         game_id=gameId,
         player_id=player_id,
