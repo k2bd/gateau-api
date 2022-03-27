@@ -598,7 +598,7 @@ for address, values in INTL_BIT_TO_MEANING.items():
 
 class PokemonRedBlueInfo(CartridgeInfo):
     @staticmethod
-    def byte_for_meaning(meaning: str) -> int:
+    def byte_for_meaning(meaning: str) -> Optional[int]:
         """
         Get the address corresponding to a specific meaning for a given
         cartridge.
@@ -606,10 +606,7 @@ class PokemonRedBlueInfo(CartridgeInfo):
         If the meaning corresponds to a single bit within a byte, return the
         address of that byte
 
-        Raises
-        ------
-        ValueError
-            If the meaning doesn't apply to this cartridge
+        Returns None if there is no corresponding byte.
         """
 
         if meaning in INTL_BYTE_TO_MEANING.inverse:
@@ -619,7 +616,7 @@ class PokemonRedBlueInfo(CartridgeInfo):
             address, bit = INTL_MEANING_TO_BIT[meaning]
             return address
 
-        raise ValueError(f"No address for {meaning!r}")
+        return None
 
     @staticmethod
     def meaning_for_byte_change(

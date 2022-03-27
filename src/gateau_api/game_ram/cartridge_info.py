@@ -21,15 +21,10 @@ class CartridgeInfo(ABC):
 
     @staticmethod
     @abstractmethod
-    def byte_for_meaning(meaning: str) -> int:
+    def byte_for_meaning(meaning: str) -> Optional[int]:
         """
         Get the address corresponding to a specific meaning for a given
-        cartridge.
-
-        Raises
-        ------
-        ValueError
-            If the meaning doesn't apply to this cartridge
+        cartridge, or None if there isn't one.
         """
 
     @staticmethod

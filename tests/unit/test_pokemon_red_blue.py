@@ -6,6 +6,7 @@ from gateau_api.game_ram.cartridge_info import ChangeMeaning
 from gateau_api.game_ram.pokemon.constants import (
     BELLSPROUT_OWNED,
     CHANSEY_OWNED,
+    CHIKORITA_OWNED,
     DRAGONAIR_SEEN,
     DRAGONITE_SEEN,
     DRATINI_SEEN,
@@ -38,6 +39,7 @@ from gateau_api.game_ram.pokemon.red_blue import PokemonRedBlueInfo
         (ODDISH_OWNED, 0xD2FC),
         (BELLSPROUT_OWNED, 0xD2FF),
         (GRIMER_SEEN, 0xD314),
+        (CHIKORITA_OWNED, None),
     ],
 )
 def test_pokemon_red_blue_byte_for_meaning(meaning: str, expected_address: int):
