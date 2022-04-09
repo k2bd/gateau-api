@@ -8,6 +8,7 @@ from freezegun import freeze_time
 from gateau_api.exceptions import PlayerNotFound
 from gateau_api.game_ram.carts import Cartridge
 from gateau_api.game_ram.pokemon.constants import (
+    ABSOL_OWNED,
     CHARMANDER_SEEN,
     CHARMELEON_SEEN,
     GLOOM_OWNED,
@@ -105,6 +106,7 @@ async def test_get_ram_subscriptions_200(
         CHARMANDER_SEEN,
         CHARMELEON_SEEN,
         MEWTWO_OWNED,
+        ABSOL_OWNED,  # Should be ignored
     }
     await service.add_subscriptions("game123", subscriptions)
 

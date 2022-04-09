@@ -196,7 +196,11 @@ class GateauFirebaseService:
         if not player:
             raise PlayerNotFound(f"No player with UID {player_id} in game {game_id}")
         info = cart_info(player.cartridge)
-        ram_addresses = {info.byte_for_meaning(meaning) for meaning in subscriptions}
+        ram_addresses = {
+            address
+            for meaning in subscriptions
+            if (address := info.byte_for_meaning(meaning)) is not None
+        }
 
         return ram_addresses
 

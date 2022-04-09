@@ -11,6 +11,7 @@ from gateau_api.game_ram.pokemon.constants import (
     CHARMELEON_SEEN,
     GLOOM_OWNED,
     GOLBAT_OWNED,
+    JIRACHI_SEEN,
     KAKUNA_OWNED,
     MEWTWO_OWNED,
     ODDISH_OWNED,
@@ -135,6 +136,7 @@ async def test_get_ram_subscriptions(
         CHARMANDER_SEEN,
         CHARMELEON_SEEN,
         MEWTWO_OWNED,
+        JIRACHI_SEEN,  # Should be ignored
     }
     await service.add_subscriptions("game123", subscriptions)
 

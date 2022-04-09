@@ -1,215 +1,13 @@
 from typing import List, Optional
 
-from bidict import bidict
-
 from gateau_api.game_ram.cartridge_info import CartridgeInfo, ChangeMeaning
+from gateau_api.game_ram.pokemon import constants
 
-from . import constants
+# Gold sha1 d8b8a3600a465308c9953dfa04f0081c05bdcb94
 
-#: Internal ID to Pokemon (reversible)
-ID_TO_POKEMON = bidict(
-    {
-        0x1: constants.RHYDON,
-        0x2: constants.KANGASKHAN,
-        0x3: constants.NIDORAN_M,
-        0x4: constants.CLEFAIRY,
-        0x5: constants.SPEAROW,
-        0x6: constants.VOLTORB,
-        0x7: constants.NIDOKING,
-        0x8: constants.SLOWBRO,
-        0x9: constants.IVYSAUR,
-        0x0A: constants.EXEGGUTOR,
-        0x0B: constants.LICKITUNG,
-        0x0C: constants.EXEGGCUTE,
-        0x0D: constants.GRIMER,
-        0x0E: constants.GENGAR,
-        0x0F: constants.NIDORAN_F,
-        0x10: constants.NIDOQUEEN,
-        0x11: constants.CUBONE,
-        0x12: constants.RHYHORN,
-        0x13: constants.LAPRAS,
-        0x14: constants.ARCANINE,
-        0x15: constants.MEW,
-        0x16: constants.GYARADOS,
-        0x17: constants.SHELLDER,
-        0x18: constants.TENTACOOL,
-        0x19: constants.GASTLY,
-        0x1A: constants.SCYTHER,
-        0x1B: constants.STARYU,
-        0x1C: constants.BLASTOISE,
-        0x1D: constants.PINSIR,
-        0x1E: constants.TANGELA,
-        0x21: constants.GROWLITHE,
-        0x22: constants.ONIX,
-        0x23: constants.FEAROW,
-        0x24: constants.PIDGEY,
-        0x25: constants.SLOWPOKE,
-        0x26: constants.KADABRA,
-        0x27: constants.GRAVELER,
-        0x28: constants.CHANSEY,
-        0x29: constants.MACHOKE,
-        0x2A: constants.MRMIME,
-        0x2B: constants.HITMONLEE,
-        0x2C: constants.HITMONCHAN,
-        0x2D: constants.ARBOK,
-        0x2E: constants.PARASECT,
-        0x2F: constants.PSYDUCK,
-        0x30: constants.DROWZEE,
-        0x31: constants.GOLEM,
-        0x33: constants.MAGMAR,
-        0x35: constants.ELECTABUZZ,
-        0x36: constants.MAGNETON,
-        0x37: constants.KOFFING,
-        0x39: constants.MANKEY,
-        0x3A: constants.SEEL,
-        0x3B: constants.DIGLETT,
-        0x3C: constants.TAUROS,
-        0x40: constants.FARFETCHD,
-        0x41: constants.VENONAT,
-        0x42: constants.DRAGONITE,
-        0x46: constants.DODUO,
-        0x47: constants.POLIWAG,
-        0x48: constants.JYNX,
-        0x49: constants.MOLTRES,
-        0x4A: constants.ARTICUNO,
-        0x4B: constants.ZAPDOS,
-        0x4C: constants.DITTO,
-        0x4D: constants.MEOWTH,
-        0x4E: constants.KRABBY,
-        0x52: constants.VULPIX,
-        0x53: constants.NINETALES,
-        0x54: constants.PIKACHU,
-        0x55: constants.RAICHU,
-        0x58: constants.DRATINI,
-        0x59: constants.DRAGONAIR,
-        0x5A: constants.KABUTO,
-        0x5B: constants.KABUTOPS,
-        0x5C: constants.HORSEA,
-        0x5D: constants.SEADRA,
-        0x60: constants.SANDSHREW,
-        0x61: constants.SANDSLASH,
-        0x62: constants.OMANYTE,
-        0x63: constants.OMASTAR,
-        0x64: constants.JIGGLYPUFF,
-        0x65: constants.WIGGLYTUFF,
-        0x66: constants.EEVEE,
-        0x67: constants.FLAREON,
-        0x68: constants.JOLTEON,
-        0x69: constants.VAPOREON,
-        0x6A: constants.MACHOP,
-        0x6B: constants.ZUBAT,
-        0x6C: constants.EKANS,
-        0x6D: constants.PARAS,
-        0x6E: constants.POLIWHIRL,
-        0x6F: constants.POLIWRATH,
-        0x70: constants.WEEDLE,
-        0x71: constants.KAKUNA,
-        0x72: constants.BEEDRILL,
-        0x74: constants.DODRIO,
-        0x75: constants.PRIMEAPE,
-        0x76: constants.DUGTRIO,
-        0x77: constants.VENOMOTH,
-        0x78: constants.DEWGONG,
-        0x7B: constants.CATERPIE,
-        0x7C: constants.METAPOD,
-        0x7D: constants.BUTTERFREE,
-        0x7E: constants.MACHAMP,
-        0x80: constants.GOLDUCK,
-        0x81: constants.HYPNO,
-        0x82: constants.GOLBAT,
-        0x83: constants.MEWTWO,
-        0x84: constants.SNORLAX,
-        0x85: constants.MAGIKARP,
-        0x88: constants.MUK,
-        0x8A: constants.KINGLER,
-        0x8B: constants.CLOYSTER,
-        0x8D: constants.ELECTRODE,
-        0x8E: constants.CLEFABLE,
-        0x8F: constants.WEEZING,
-        0x90: constants.PERSIAN,
-        0x91: constants.MAROWAK,
-        0x93: constants.HAUNTER,
-        0x94: constants.ABRA,
-        0x95: constants.ALAKAZAM,
-        0x96: constants.PIDGEOTTO,
-        0x97: constants.PIDGEOT,
-        0x98: constants.STARMIE,
-        0x99: constants.BULBASAUR,
-        0x9A: constants.VENUSAUR,
-        0x9B: constants.TENTACRUEL,
-        0x9D: constants.GOLDEEN,
-        0x9E: constants.SEAKING,
-        0xA3: constants.PONYTA,
-        0xA4: constants.RAPIDASH,
-        0xA5: constants.RATTATA,
-        0xA6: constants.RATICATE,
-        0xA7: constants.NIDORINO,
-        0xA8: constants.NIDORINA,
-        0xA9: constants.GEODUDE,
-        0xAA: constants.PORYGON,
-        0xAB: constants.AERODACTYL,
-        0xAD: constants.MAGNEMITE,
-        0xB0: constants.CHARMANDER,
-        0xB1: constants.SQUIRTLE,
-        0xB2: constants.CHARMELEON,
-        0xB3: constants.WARTORTLE,
-        0xB4: constants.CHARIZARD,
-        0xB9: constants.ODDISH,
-        0xBA: constants.GLOOM,
-        0xBB: constants.VILEPLUME,
-        0xBC: constants.BELLSPROUT,
-        0xBD: constants.WEEPINBELL,
-        0xBE: constants.VICTREEBEL,
-    }
-)
-
-#: International version RAM address to meaning (reversible)
-INTL_BYTE_TO_MEANING = bidict(
-    {
-        0xD2F7: constants.OWN_1_8,
-        0xD2F8: constants.OWN_9_16,
-        0xD2F9: constants.OWN_17_24,
-        0xD2FA: constants.OWN_25_32,
-        0xD2FB: constants.OWN_33_40,
-        0xD2FC: constants.OWN_41_48,
-        0xD2FD: constants.OWN_49_56,
-        0xD2FE: constants.OWN_57_64,
-        0xD2FF: constants.OWN_65_72,
-        0xD300: constants.OWN_73_80,
-        0xD301: constants.OWN_81_88,
-        0xD302: constants.OWN_89_96,
-        0xD303: constants.OWN_97_104,
-        0xD304: constants.OWN_105_112,
-        0xD305: constants.OWN_113_120,
-        0xD306: constants.OWN_121_128,
-        0xD307: constants.OWN_129_136,
-        0xD308: constants.OWN_137_144,
-        0xD309: constants.OWN_145_152,
-        0xD30A: constants.SEEN_1_8,
-        0xD30B: constants.SEEN_9_16,
-        0xD30C: constants.SEEN_17_24,
-        0xD30D: constants.SEEN_25_32,
-        0xD30E: constants.SEEN_33_40,
-        0xD30F: constants.SEEN_41_48,
-        0xD310: constants.SEEN_49_56,
-        0xD311: constants.SEEN_57_64,
-        0xD312: constants.SEEN_65_72,
-        0xD313: constants.SEEN_73_80,
-        0xD314: constants.SEEN_81_88,
-        0xD315: constants.SEEN_89_96,
-        0xD316: constants.SEEN_97_104,
-        0xD317: constants.SEEN_105_112,
-        0xD318: constants.SEEN_113_120,
-        0xD319: constants.SEEN_121_128,
-        0xD31A: constants.SEEN_129_136,
-        0xD31B: constants.SEEN_137_144,
-        0xD31C: constants.SEEN_145_152,
-    }
-)
-
-#: International version RAM address and bit to meaning
-INTL_BIT_TO_MEANING = {
-    0xD2F7: {
+#: Bit to meaning
+BIT_TO_MEANING = {
+    0xDBE4: {
         7: constants.BULBASAUR_OWNED,
         6: constants.IVYSAUR_OWNED,
         5: constants.VENUSAUR_OWNED,
@@ -219,7 +17,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.SQUIRTLE_OWNED,
         0: constants.WARTORTLE_OWNED,
     },
-    0xD2F8: {
+    0xDBE5: {
         7: constants.BLASTOISE_OWNED,
         6: constants.CATERPIE_OWNED,
         5: constants.METAPOD_OWNED,
@@ -229,7 +27,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.BEEDRILL_OWNED,
         0: constants.PIDGEY_OWNED,
     },
-    0xD2F9: {
+    0xDBE6: {
         7: constants.PIDGEOTTO_OWNED,
         6: constants.PIDGEOT_OWNED,
         5: constants.RATTATA_OWNED,
@@ -239,7 +37,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.EKANS_OWNED,
         0: constants.ARBOK_OWNED,
     },
-    0xD2FA: {
+    0xDBE7: {
         7: constants.PIKACHU_OWNED,
         6: constants.RAICHU_OWNED,
         5: constants.SANDSHREW_OWNED,
@@ -249,7 +47,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.NIDOQUEEN_OWNED,
         0: constants.NIDORAN_M_OWNED,
     },
-    0xD2FB: {
+    0xDBE8: {
         7: constants.NIDORINO_OWNED,
         6: constants.NIDOKING_OWNED,
         5: constants.CLEFAIRY_OWNED,
@@ -259,7 +57,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.JIGGLYPUFF_OWNED,
         0: constants.WIGGLYTUFF_OWNED,
     },
-    0xD2FC: {
+    0xDBE9: {
         7: constants.ZUBAT_OWNED,
         6: constants.GOLBAT_OWNED,
         5: constants.ODDISH_OWNED,
@@ -269,7 +67,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.PARASECT_OWNED,
         0: constants.VENONAT_OWNED,
     },
-    0xD2FD: {
+    0xDBEA: {
         7: constants.VENOMOTH_OWNED,
         6: constants.DIGLETT_OWNED,
         5: constants.DUGTRIO_OWNED,
@@ -279,7 +77,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.GOLDUCK_OWNED,
         0: constants.MANKEY_OWNED,
     },
-    0xD2FE: {
+    0xDBEB: {
         7: constants.PRIMEAPE_OWNED,
         6: constants.GROWLITHE_OWNED,
         5: constants.ARCANINE_OWNED,
@@ -289,7 +87,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.ABRA_OWNED,
         0: constants.KADABRA_OWNED,
     },
-    0xD2FF: {
+    0xDBEC: {
         7: constants.ALAKAZAM_OWNED,
         6: constants.MACHOP_OWNED,
         5: constants.MACHOKE_OWNED,
@@ -299,7 +97,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.VICTREEBEL_OWNED,
         0: constants.TENTACOOL_OWNED,
     },
-    0xD300: {
+    0xDBED: {
         7: constants.TENTACRUEL_OWNED,
         6: constants.GEODUDE_OWNED,
         5: constants.GRAVELER_OWNED,
@@ -309,7 +107,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.SLOWPOKE_OWNED,
         0: constants.SLOWBRO_OWNED,
     },
-    0xD301: {
+    0xDBEE: {
         7: constants.MAGNEMITE_OWNED,
         6: constants.MAGNETON_OWNED,
         5: constants.FARFETCHD_OWNED,
@@ -319,7 +117,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.DEWGONG_OWNED,
         0: constants.GRIMER_OWNED,
     },
-    0xD302: {
+    0xDBEF: {
         7: constants.MUK_OWNED,
         6: constants.SHELLDER_OWNED,
         5: constants.CLOYSTER_OWNED,
@@ -329,7 +127,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.ONIX_OWNED,
         0: constants.DROWZEE_OWNED,
     },
-    0xD303: {
+    0xDBF0: {
         7: constants.HYPNO_OWNED,
         6: constants.KRABBY_OWNED,
         5: constants.KINGLER_OWNED,
@@ -339,7 +137,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.EXEGGUTOR_OWNED,
         0: constants.CUBONE_OWNED,
     },
-    0xD304: {
+    0xDBF1: {
         7: constants.MAROWAK_OWNED,
         6: constants.HITMONLEE_OWNED,
         5: constants.HITMONCHAN_OWNED,
@@ -349,7 +147,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.RHYHORN_OWNED,
         0: constants.RHYDON_OWNED,
     },
-    0xD305: {
+    0xDBF2: {
         7: constants.CHANSEY_OWNED,
         6: constants.TANGELA_OWNED,
         5: constants.KANGASKHAN_OWNED,
@@ -359,7 +157,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.SEAKING_OWNED,
         0: constants.STARYU_OWNED,
     },
-    0xD306: {
+    0xDBF3: {
         7: constants.STARMIE_OWNED,
         6: constants.MRMIME_OWNED,
         5: constants.SCYTHER_OWNED,
@@ -369,7 +167,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.PINSIR_OWNED,
         0: constants.TAUROS_OWNED,
     },
-    0xD307: {
+    0xDBF4: {
         7: constants.MAGIKARP_OWNED,
         6: constants.GYARADOS_OWNED,
         5: constants.LAPRAS_OWNED,
@@ -379,7 +177,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.JOLTEON_OWNED,
         0: constants.FLAREON_OWNED,
     },
-    0xD308: {
+    0xDBF5: {
         7: constants.PORYGON_OWNED,
         6: constants.OMANYTE_OWNED,
         5: constants.OMASTAR_OWNED,
@@ -389,7 +187,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.SNORLAX_OWNED,
         0: constants.ARTICUNO_OWNED,
     },
-    0xD309: {
+    0xDBF6: {
         7: constants.ZAPDOS_OWNED,
         6: constants.MOLTRES_OWNED,
         5: constants.DRATINI_OWNED,
@@ -397,8 +195,134 @@ INTL_BIT_TO_MEANING = {
         3: constants.DRAGONITE_OWNED,
         2: constants.MEWTWO_OWNED,
         1: constants.MEW_OWNED,
+        0: constants.CHIKORITA_OWNED,
     },
-    0xD30A: {
+    0xDBF7: {
+        7: constants.BAYLEEF_OWNED,
+        6: constants.MEGANIUM_OWNED,
+        5: constants.CYNDAQUIL_OWNED,
+        4: constants.QUILAVA_OWNED,
+        3: constants.TYPHLOSION_OWNED,
+        2: constants.TOTODILE_OWNED,
+        1: constants.CROCONAW_OWNED,
+        0: constants.FERALIGATR_OWNED,
+    },
+    0xDBF8: {
+        7: constants.SENTRET_OWNED,
+        6: constants.FURRET_OWNED,
+        5: constants.HOOTHOOT_OWNED,
+        4: constants.NOCTOWL_OWNED,
+        3: constants.LEDYBA_OWNED,
+        2: constants.LEDIAN_OWNED,
+        1: constants.SPINARAK_OWNED,
+        0: constants.ARIADOS_OWNED,
+    },
+    0xDBF9: {
+        7: constants.CROBAT_OWNED,
+        6: constants.CHINCHOU_OWNED,
+        5: constants.LANTURN_OWNED,
+        4: constants.PICHU_OWNED,
+        3: constants.CLEFFA_OWNED,
+        2: constants.IGGLYBUFF_OWNED,
+        1: constants.TOGEPI_OWNED,
+        0: constants.TOGETIC_OWNED,
+    },
+    0xDBFA: {
+        7: constants.NATU_OWNED,
+        6: constants.XATU_OWNED,
+        5: constants.MAREEP_OWNED,
+        4: constants.FLAAFFY_OWNED,
+        3: constants.AMPHAROS_OWNED,
+        2: constants.BELLOSSOM_OWNED,
+        1: constants.MARILL_OWNED,
+        0: constants.AZUMARILL_OWNED,
+    },
+    0xDBFB: {
+        7: constants.SUDOWOODO_OWNED,
+        6: constants.POLITOED_OWNED,
+        5: constants.HOPPIP_OWNED,
+        4: constants.SKIPLOOM_OWNED,
+        3: constants.JUMPLUFF_OWNED,
+        2: constants.AIPOM_OWNED,
+        1: constants.SUNKERN_OWNED,
+        0: constants.SUNFLORA_OWNED,
+    },
+    0xDBFC: {
+        7: constants.YANMA_OWNED,
+        6: constants.WOOPER_OWNED,
+        5: constants.QUAGSIRE_OWNED,
+        4: constants.ESPEON_OWNED,
+        3: constants.UMBREON_OWNED,
+        2: constants.MURKROW_OWNED,
+        1: constants.SLOWKING_OWNED,
+        0: constants.MISDREAVUS_OWNED,
+    },
+    0xDBFD: {
+        7: constants.UNOWN_OWNED,
+        6: constants.WOBBUFFET_OWNED,
+        5: constants.GIRAFARIG_OWNED,
+        4: constants.PINECO_OWNED,
+        3: constants.FORRETRESS_OWNED,
+        2: constants.DUNSPARCE_OWNED,
+        1: constants.GLIGAR_OWNED,
+        0: constants.STEELIX_OWNED,
+    },
+    0xDBFE: {
+        7: constants.SNUBBULL_OWNED,
+        6: constants.GRANBULL_OWNED,
+        5: constants.QWILFISH_OWNED,
+        4: constants.SCIZOR_OWNED,
+        3: constants.SHUCKLE_OWNED,
+        2: constants.HERACROSS_OWNED,
+        1: constants.SNEASEL_OWNED,
+        0: constants.TEDDIURSA_OWNED,
+    },
+    0xDBFF: {
+        7: constants.URSARING_OWNED,
+        6: constants.SLUGMA_OWNED,
+        5: constants.MAGCARGO_OWNED,
+        4: constants.SWINUB_OWNED,
+        3: constants.PILOSWINE_OWNED,
+        2: constants.CORSOLA_OWNED,
+        1: constants.REMORAID_OWNED,
+        0: constants.OCTILLERY_OWNED,
+    },
+    0xDC00: {
+        7: constants.DELIBIRD_OWNED,
+        6: constants.MANTINE_OWNED,
+        5: constants.SKARMORY_OWNED,
+        4: constants.HOUNDOUR_OWNED,
+        3: constants.HOUNDOOM_OWNED,
+        2: constants.KINGDRA_OWNED,
+        1: constants.PHANPY_OWNED,
+        0: constants.DONPHAN_OWNED,
+    },
+    0xDC01: {
+        7: constants.PORYGON2_OWNED,
+        6: constants.STANTLER_OWNED,
+        5: constants.SMEARGLE_OWNED,
+        4: constants.TYROGUE_OWNED,
+        3: constants.HITMONTOP_OWNED,
+        2: constants.SMOOCHUM_OWNED,
+        1: constants.ELEKID_OWNED,
+        0: constants.MAGBY_OWNED,
+    },
+    0xDC02: {
+        7: constants.MILTANK_OWNED,
+        6: constants.BLISSEY_OWNED,
+        5: constants.RAIKOU_OWNED,
+        4: constants.ENTEI_OWNED,
+        3: constants.SUICUNE_OWNED,
+        2: constants.LARVITAR_OWNED,
+        1: constants.PUPITAR_OWNED,
+        0: constants.TYRANITAR_OWNED,
+    },
+    0xDC03: {
+        7: constants.LUGIA_OWNED,
+        6: constants.HO_OH_OWNED,
+        5: constants.CELEBI_OWNED,
+    },
+    0xDC04: {
         7: constants.BULBASAUR_SEEN,
         6: constants.IVYSAUR_SEEN,
         5: constants.VENUSAUR_SEEN,
@@ -408,7 +332,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.SQUIRTLE_SEEN,
         0: constants.WARTORTLE_SEEN,
     },
-    0xD30B: {
+    0xDC05: {
         7: constants.BLASTOISE_SEEN,
         6: constants.CATERPIE_SEEN,
         5: constants.METAPOD_SEEN,
@@ -418,7 +342,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.BEEDRILL_SEEN,
         0: constants.PIDGEY_SEEN,
     },
-    0xD30C: {
+    0xDC06: {
         7: constants.PIDGEOTTO_SEEN,
         6: constants.PIDGEOT_SEEN,
         5: constants.RATTATA_SEEN,
@@ -428,7 +352,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.EKANS_SEEN,
         0: constants.ARBOK_SEEN,
     },
-    0xD30D: {
+    0xDC07: {
         7: constants.PIKACHU_SEEN,
         6: constants.RAICHU_SEEN,
         5: constants.SANDSHREW_SEEN,
@@ -438,7 +362,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.NIDOQUEEN_SEEN,
         0: constants.NIDORAN_M_SEEN,
     },
-    0xD30E: {
+    0xDC08: {
         7: constants.NIDORINO_SEEN,
         6: constants.NIDOKING_SEEN,
         5: constants.CLEFAIRY_SEEN,
@@ -448,7 +372,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.JIGGLYPUFF_SEEN,
         0: constants.WIGGLYTUFF_SEEN,
     },
-    0xD30F: {
+    0xDC09: {
         7: constants.ZUBAT_SEEN,
         6: constants.GOLBAT_SEEN,
         5: constants.ODDISH_SEEN,
@@ -458,7 +382,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.PARASECT_SEEN,
         0: constants.VENONAT_SEEN,
     },
-    0xD310: {
+    0xDC0A: {
         7: constants.VENOMOTH_SEEN,
         6: constants.DIGLETT_SEEN,
         5: constants.DUGTRIO_SEEN,
@@ -468,7 +392,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.GOLDUCK_SEEN,
         0: constants.MANKEY_SEEN,
     },
-    0xD311: {
+    0xDC0B: {
         7: constants.PRIMEAPE_SEEN,
         6: constants.GROWLITHE_SEEN,
         5: constants.ARCANINE_SEEN,
@@ -478,7 +402,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.ABRA_SEEN,
         0: constants.KADABRA_SEEN,
     },
-    0xD312: {
+    0xDC0C: {
         7: constants.ALAKAZAM_SEEN,
         6: constants.MACHOP_SEEN,
         5: constants.MACHOKE_SEEN,
@@ -488,7 +412,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.VICTREEBEL_SEEN,
         0: constants.TENTACOOL_SEEN,
     },
-    0xD313: {
+    0xDC0D: {
         7: constants.TENTACRUEL_SEEN,
         6: constants.GEODUDE_SEEN,
         5: constants.GRAVELER_SEEN,
@@ -498,7 +422,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.SLOWPOKE_SEEN,
         0: constants.SLOWBRO_SEEN,
     },
-    0xD314: {
+    0xDC0E: {
         7: constants.MAGNEMITE_SEEN,
         6: constants.MAGNETON_SEEN,
         5: constants.FARFETCHD_SEEN,
@@ -508,7 +432,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.DEWGONG_SEEN,
         0: constants.GRIMER_SEEN,
     },
-    0xD315: {
+    0xDC0F: {
         7: constants.MUK_SEEN,
         6: constants.SHELLDER_SEEN,
         5: constants.CLOYSTER_SEEN,
@@ -518,7 +442,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.ONIX_SEEN,
         0: constants.DROWZEE_SEEN,
     },
-    0xD316: {
+    0xDC10: {
         7: constants.HYPNO_SEEN,
         6: constants.KRABBY_SEEN,
         5: constants.KINGLER_SEEN,
@@ -528,7 +452,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.EXEGGUTOR_SEEN,
         0: constants.CUBONE_SEEN,
     },
-    0xD317: {
+    0xDC11: {
         7: constants.MAROWAK_SEEN,
         6: constants.HITMONLEE_SEEN,
         5: constants.HITMONCHAN_SEEN,
@@ -538,7 +462,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.RHYHORN_SEEN,
         0: constants.RHYDON_SEEN,
     },
-    0xD318: {
+    0xDC12: {
         7: constants.CHANSEY_SEEN,
         6: constants.TANGELA_SEEN,
         5: constants.KANGASKHAN_SEEN,
@@ -548,7 +472,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.SEAKING_SEEN,
         0: constants.STARYU_SEEN,
     },
-    0xD319: {
+    0xDC13: {
         7: constants.STARMIE_SEEN,
         6: constants.MRMIME_SEEN,
         5: constants.SCYTHER_SEEN,
@@ -558,7 +482,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.PINSIR_SEEN,
         0: constants.TAUROS_SEEN,
     },
-    0xD31A: {
+    0xDC14: {
         7: constants.MAGIKARP_SEEN,
         6: constants.GYARADOS_SEEN,
         5: constants.LAPRAS_SEEN,
@@ -568,7 +492,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.JOLTEON_SEEN,
         0: constants.FLAREON_SEEN,
     },
-    0xD31B: {
+    0xDC15: {
         7: constants.PORYGON_SEEN,
         6: constants.OMANYTE_SEEN,
         5: constants.OMASTAR_SEEN,
@@ -578,7 +502,7 @@ INTL_BIT_TO_MEANING = {
         1: constants.SNORLAX_SEEN,
         0: constants.ARTICUNO_SEEN,
     },
-    0xD31C: {
+    0xDC16: {
         7: constants.ZAPDOS_SEEN,
         6: constants.MOLTRES_SEEN,
         5: constants.DRATINI_SEEN,
@@ -586,17 +510,143 @@ INTL_BIT_TO_MEANING = {
         3: constants.DRAGONITE_SEEN,
         2: constants.MEWTWO_SEEN,
         1: constants.MEW_SEEN,
+        0: constants.CHIKORITA_SEEN,
+    },
+    0xDC17: {
+        7: constants.BAYLEEF_SEEN,
+        6: constants.MEGANIUM_SEEN,
+        5: constants.CYNDAQUIL_SEEN,
+        4: constants.QUILAVA_SEEN,
+        3: constants.TYPHLOSION_SEEN,
+        2: constants.TOTODILE_SEEN,
+        1: constants.CROCONAW_SEEN,
+        0: constants.FERALIGATR_SEEN,
+    },
+    0xDC18: {
+        7: constants.SENTRET_SEEN,
+        6: constants.FURRET_SEEN,
+        5: constants.HOOTHOOT_SEEN,
+        4: constants.NOCTOWL_SEEN,
+        3: constants.LEDYBA_SEEN,
+        2: constants.LEDIAN_SEEN,
+        1: constants.SPINARAK_SEEN,
+        0: constants.ARIADOS_SEEN,
+    },
+    0xDC19: {
+        7: constants.CROBAT_SEEN,
+        6: constants.CHINCHOU_SEEN,
+        5: constants.LANTURN_SEEN,
+        4: constants.PICHU_SEEN,
+        3: constants.CLEFFA_SEEN,
+        2: constants.IGGLYBUFF_SEEN,
+        1: constants.TOGEPI_SEEN,
+        0: constants.TOGETIC_SEEN,
+    },
+    0xDC1A: {
+        7: constants.NATU_SEEN,
+        6: constants.XATU_SEEN,
+        5: constants.MAREEP_SEEN,
+        4: constants.FLAAFFY_SEEN,
+        3: constants.AMPHAROS_SEEN,
+        2: constants.BELLOSSOM_SEEN,
+        1: constants.MARILL_SEEN,
+        0: constants.AZUMARILL_SEEN,
+    },
+    0xDC1B: {
+        7: constants.SUDOWOODO_SEEN,
+        6: constants.POLITOED_SEEN,
+        5: constants.HOPPIP_SEEN,
+        4: constants.SKIPLOOM_SEEN,
+        3: constants.JUMPLUFF_SEEN,
+        2: constants.AIPOM_SEEN,
+        1: constants.SUNKERN_SEEN,
+        0: constants.SUNFLORA_SEEN,
+    },
+    0xDC1C: {
+        7: constants.YANMA_SEEN,
+        6: constants.WOOPER_SEEN,
+        5: constants.QUAGSIRE_SEEN,
+        4: constants.ESPEON_SEEN,
+        3: constants.UMBREON_SEEN,
+        2: constants.MURKROW_SEEN,
+        1: constants.SLOWKING_SEEN,
+        0: constants.MISDREAVUS_SEEN,
+    },
+    0xDC1D: {
+        7: constants.UNOWN_SEEN,
+        6: constants.WOBBUFFET_SEEN,
+        5: constants.GIRAFARIG_SEEN,
+        4: constants.PINECO_SEEN,
+        3: constants.FORRETRESS_SEEN,
+        2: constants.DUNSPARCE_SEEN,
+        1: constants.GLIGAR_SEEN,
+        0: constants.STEELIX_SEEN,
+    },
+    0xDC1E: {
+        7: constants.SNUBBULL_SEEN,
+        6: constants.GRANBULL_SEEN,
+        5: constants.QWILFISH_SEEN,
+        4: constants.SCIZOR_SEEN,
+        3: constants.SHUCKLE_SEEN,
+        2: constants.HERACROSS_SEEN,
+        1: constants.SNEASEL_SEEN,
+        0: constants.TEDDIURSA_SEEN,
+    },
+    0xDC1F: {
+        7: constants.URSARING_SEEN,
+        6: constants.SLUGMA_SEEN,
+        5: constants.MAGCARGO_SEEN,
+        4: constants.SWINUB_SEEN,
+        3: constants.PILOSWINE_SEEN,
+        2: constants.CORSOLA_SEEN,
+        1: constants.REMORAID_SEEN,
+        0: constants.OCTILLERY_SEEN,
+    },
+    0xDC20: {
+        7: constants.DELIBIRD_SEEN,
+        6: constants.MANTINE_SEEN,
+        5: constants.SKARMORY_SEEN,
+        4: constants.HOUNDOUR_SEEN,
+        3: constants.HOUNDOOM_SEEN,
+        2: constants.KINGDRA_SEEN,
+        1: constants.PHANPY_SEEN,
+        0: constants.DONPHAN_SEEN,
+    },
+    0xDC21: {
+        7: constants.PORYGON2_SEEN,
+        6: constants.STANTLER_SEEN,
+        5: constants.SMEARGLE_SEEN,
+        4: constants.TYROGUE_SEEN,
+        3: constants.HITMONTOP_SEEN,
+        2: constants.SMOOCHUM_SEEN,
+        1: constants.ELEKID_SEEN,
+        0: constants.MAGBY_SEEN,
+    },
+    0xDC22: {
+        7: constants.MILTANK_SEEN,
+        6: constants.BLISSEY_SEEN,
+        5: constants.RAIKOU_SEEN,
+        4: constants.ENTEI_SEEN,
+        3: constants.SUICUNE_SEEN,
+        2: constants.LARVITAR_SEEN,
+        1: constants.PUPITAR_SEEN,
+        0: constants.TYRANITAR_SEEN,
+    },
+    0xDC23: {
+        7: constants.LUGIA_SEEN,
+        6: constants.HO_OH_SEEN,
+        5: constants.CELEBI_SEEN,
     },
 }
 
-#: International version bit-value meaning to byte address and bit
-INTL_MEANING_TO_BIT = {}
-for address, values in INTL_BIT_TO_MEANING.items():
+#: Bit-value meaning to byte address and bit
+MEANING_TO_BIT = {}
+for address, values in BIT_TO_MEANING.items():
     for bit, meaning in values.items():
-        INTL_MEANING_TO_BIT[meaning] = (address, bit)
+        MEANING_TO_BIT[meaning] = (address, bit)
 
 
-class PokemonRedBlueInfo(CartridgeInfo):
+class PokemonGoldSilverInfo(CartridgeInfo):
     @staticmethod
     def byte_for_meaning(meaning: str) -> Optional[int]:
         """
@@ -609,11 +659,8 @@ class PokemonRedBlueInfo(CartridgeInfo):
         Returns None if there is no corresponding byte.
         """
 
-        if meaning in INTL_BYTE_TO_MEANING.inverse:
-            return INTL_BYTE_TO_MEANING.inverse[meaning]
-
-        if meaning in INTL_MEANING_TO_BIT:
-            address, bit = INTL_MEANING_TO_BIT[meaning]
+        if meaning in MEANING_TO_BIT:
+            address, bit = MEANING_TO_BIT[meaning]
             return address
 
         return None
@@ -631,7 +678,7 @@ class PokemonRedBlueInfo(CartridgeInfo):
         change, and whether it's a positive or negative result
         """
 
-        if address in INTL_BIT_TO_MEANING:
+        if address in BIT_TO_MEANING:
             new_bits = [int(i) for i in "{0:08b}".format(new_value)]
             old_bits = (
                 [int(i) for i in "{0:08b}".format(old_value)]
@@ -647,16 +694,12 @@ class PokemonRedBlueInfo(CartridgeInfo):
             results = []
             for change in changed_bits:
                 try:
-                    meaning = INTL_BIT_TO_MEANING[address][change]
+                    meaning = BIT_TO_MEANING[address][change]
                 except KeyError:
                     continue
                 positive = new_bits[change] == 1
                 results.append(ChangeMeaning(meaning=meaning, value=positive))
 
             return results
-
-        if address in INTL_BYTE_TO_MEANING:
-            # TODO: Refactor to have proper values parsing
-            return [ChangeMeaning(meaning=INTL_BYTE_TO_MEANING[address], value=True)]
 
         return []
