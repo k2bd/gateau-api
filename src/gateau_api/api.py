@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from gateau_api.exceptions import PlayerNotFound
-from gateau_api.routers import firebase_authed, unauthed
+from gateau_api.routers import admin_authed, firebase_authed, unauthed
 
 logger = logging.getLogger(__name__)
 
@@ -23,6 +23,7 @@ app.add_middleware(
 
 app.include_router(unauthed.router)
 app.include_router(firebase_authed.router)
+app.include_router(admin_authed.router)
 
 
 @app.exception_handler(PlayerNotFound)

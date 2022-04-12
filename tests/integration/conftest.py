@@ -2,19 +2,28 @@ from typing import AsyncGenerator
 
 import pytest
 from fastapi.testclient import TestClient
+from firebase_admin import auth
 from firebasil.auth import AuthClient
 from firebasil.auth.types import SignUpUser
 
 from gateau_api.api import app
 from gateau_api.constants import FIREBASE_API_KEY
+from gateau_api.dependencies.user import ADMIN_CLAIM
+from gateau_api.firebase import firebase_init_app
 from gateau_api.service import GateauFirebaseService
 from tests.integration.constants import (
+    EXAMPLE_ADMIN_DISPLAY_NAME,
+    EXAMPLE_ADMIN_EMAIL,
+    EXAMPLE_ADMIN_PASSWORD,
+    EXAMPLE_ADMIN_PHOTO_URL,
     EXAMPLE_USER_DISPLAY_NAME,
     EXAMPLE_USER_EMAIL,
     EXAMPLE_USER_PASSWORD,
     EXAMPLE_USER_PHOTO_URL,
     FIREBASE_AUTH_EMULATOR_HOST,
 )
+
+firebase_init_app()
 
 
 @pytest.fixture
@@ -42,6 +51,30 @@ async def example_user(auth_client: AuthClient) -> AsyncGenerator[SignUpUser, No
         display_name=EXAMPLE_USER_DISPLAY_NAME,
         photo_url=EXAMPLE_USER_PHOTO_URL,
     )
+
+    try:
+        yield user
+    finally:
+        await auth_client.delete_account(user.id_token)
+
+
+@pytest.fixture
+async def example_admin(auth_client: AuthClient) -> AsyncGenerator[SignUpUser, None]:
+    """
+    Create an admin user with a set email, display name, and photo URL.
+    """
+    user = await auth_client.sign_up(
+        email=EXAMPLE_ADMIN_EMAIL,
+        password=EXAMPLE_ADMIN_PASSWORD,
+    )
+
+    await auth_client.update_profile(
+        id_token=user.id_token,
+        display_name=EXAMPLE_ADMIN_DISPLAY_NAME,
+        photo_url=EXAMPLE_ADMIN_PHOTO_URL,
+    )
+
+    auth.set_custom_user_claims(user.local_id, {ADMIN_CLAIM: True})
 
     try:
         yield user

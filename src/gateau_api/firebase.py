@@ -15,6 +15,9 @@ def firebase_init_app():
     """
     Initialize the admin app, using a testing project ID if we're emulating.
     """
+    if firebase_admin._apps:
+        return
+
     if TESTING_PROJECT_ID:
         firebase_admin.initialize_app(options={"projectId": TESTING_PROJECT_ID})
         return
@@ -22,5 +25,4 @@ def firebase_init_app():
     # Production
     creds = firebase_admin.credentials.Certificate(service_account_info())
 
-    if not firebase_admin._apps:
-        firebase_admin.initialize_app(creds)
+    firebase_admin.initialize_app(creds)

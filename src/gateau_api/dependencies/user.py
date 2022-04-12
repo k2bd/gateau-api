@@ -6,6 +6,8 @@ from gateau_api.firebase import firebase_init_app
 
 firebase_init_app()
 
+ADMIN_CLAIM = "admin"
+
 
 def _verify_token(id_token: str):
     try:
@@ -27,3 +29,16 @@ async def get_user_uid(
 ):
     user = _verify_token(id_token=id_token)
     return user["uid"]
+
+
+async def require_admin(
+    uid: str = Depends(get_user_uid),
+):
+    user = auth.get_user(uid)
+    claims = user.custom_claims or {}
+
+    if ADMIN_CLAIM not in claims or not claims[ADMIN_CLAIM]:
+        raise HTTPException(
+            status_code=401,
+            detail=str("You must be an admin."),
+        )

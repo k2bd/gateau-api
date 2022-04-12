@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from fastapi_camelcase import CamelModel
 from pydantic import Field
@@ -93,3 +93,24 @@ class GameEvent(CamelModel):
 
     #: UTC timestamp of the event update, in ISO format
     timestamp: str = Field(default_factory=_now_iso)
+
+
+class FirebaseUser(CamelModel):
+    """
+    A user of the Gateau platform
+    """
+
+    #: UID
+    uid: str
+
+    #: Custom claims
+    claims: Optional[Dict[str, Any]]
+
+    #: Display name
+    display_name: Optional[str]
+
+    #: Email
+    email: Optional[str]
+
+    #: Display photo
+    photo_url: Optional[str]

@@ -24,7 +24,14 @@ from gateau_api.game_ram.pokemon.constants import (
 )
 from gateau_api.service import GateauFirebaseService
 from gateau_api.types import GameEvent, Player, RamChangeInfo, RamEvent
-from tests.integration.constants import EXAMPLE_USER_DISPLAY_NAME
+from tests.integration.constants import (
+    EXAMPLE_ADMIN_DISPLAY_NAME,
+    EXAMPLE_ADMIN_EMAIL,
+    EXAMPLE_ADMIN_PHOTO_URL,
+    EXAMPLE_USER_DISPLAY_NAME,
+    EXAMPLE_USER_EMAIL,
+    EXAMPLE_USER_PHOTO_URL,
+)
 
 
 @pytest.mark.parametrize("player_name", [EXAMPLE_USER_DISPLAY_NAME, None])
@@ -206,4 +213,52 @@ async def test_post_ram_change_200(
             player_id=example_user.local_id,
             timestamp=frozen_time,
         ),
+    ]
+
+
+@pytest.mark.asyncio
+async def test_admin_get_users_401(
+    api_client: TestClient,
+    example_user: SignUpUser,
+):
+    """
+    User is not admin
+    """
+    response = api_client.get(
+        "/admin/users",
+        headers={"Authorization": f"Bearer {example_user.id_token}"},
+    )
+    assert response.status_code == 401
+    assert response.json() == {"detail": "You must be an admin."}
+
+
+@pytest.mark.asyncio
+async def test_admin_get_users_200(
+    api_client: TestClient,
+    example_user: SignUpUser,
+    example_admin: SignUpUser,
+):
+    """
+    Admins can get user info
+    """
+    response = api_client.get(
+        "/admin/users",
+        headers={"Authorization": f"Bearer {example_admin.id_token}"},
+    )
+    assert response.status_code == 200
+    assert response.json() == [
+        {
+            "uid": example_user.local_id,
+            "displayName": EXAMPLE_USER_DISPLAY_NAME,
+            "photoUrl": EXAMPLE_USER_PHOTO_URL,
+            "email": EXAMPLE_USER_EMAIL,
+            "claims": None,
+        },
+        {
+            "uid": example_admin.local_id,
+            "displayName": EXAMPLE_ADMIN_DISPLAY_NAME,
+            "photoUrl": EXAMPLE_ADMIN_PHOTO_URL,
+            "email": EXAMPLE_ADMIN_EMAIL,
+            "claims": {"admin": True},
+        },
     ]
