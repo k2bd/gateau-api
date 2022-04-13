@@ -246,13 +246,14 @@ async def test_admin_get_users_200(
         headers={"Authorization": f"Bearer {example_admin.id_token}"},
     )
     assert response.status_code == 200
-    assert response.json() == [
+    expected = [
         {
             "uid": example_user.local_id,
             "displayName": EXAMPLE_USER_DISPLAY_NAME,
             "photoUrl": EXAMPLE_USER_PHOTO_URL,
             "email": EXAMPLE_USER_EMAIL,
             "claims": None,
+            "avatars": [],
         },
         {
             "uid": example_admin.local_id,
@@ -260,5 +261,9 @@ async def test_admin_get_users_200(
             "photoUrl": EXAMPLE_ADMIN_PHOTO_URL,
             "email": EXAMPLE_ADMIN_EMAIL,
             "claims": {"admin": True},
+            "avatars": [],
         },
     ]
+    assert sorted(response.json(), key=lambda i: i["uid"]) == sorted(
+        expected, key=lambda i: i["uid"]
+    )

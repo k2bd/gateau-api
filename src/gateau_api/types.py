@@ -95,6 +95,21 @@ class GameEvent(CamelModel):
     timestamp: str = Field(default_factory=_now_iso)
 
 
+class PokemonAvatar(CamelModel):
+    """
+    A Pokemon avatar someone can use
+    """
+
+    #: National dex number
+    national_dex: int
+
+    #: If the user can use shiny Pokemon
+    allow_shiny: bool
+
+    #: The reason the player can use this avatar
+    grant_reason: Optional[str]
+
+
 class FirebaseUser(CamelModel):
     """
     A user of the Gateau platform
@@ -114,3 +129,6 @@ class FirebaseUser(CamelModel):
 
     #: Display photo
     photo_url: Optional[str]
+
+    #: Available bonus avatars
+    avatars: List[PokemonAvatar]

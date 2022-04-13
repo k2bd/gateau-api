@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager, contextmanager
 from typing import AsyncGenerator
 
 import pytest
@@ -22,6 +23,7 @@ from tests.integration.constants import (
     EXAMPLE_USER_PHOTO_URL,
     FIREBASE_AUTH_EMULATOR_HOST,
 )
+from tests.integration.helpers import temporary_service, temporary_user
 
 firebase_init_app()
 
@@ -36,26 +38,22 @@ async def auth_client() -> AsyncGenerator[AuthClient, None]:
         yield auth_client
 
 
+
+
+
 @pytest.fixture
 async def example_user(auth_client: AuthClient) -> AsyncGenerator[SignUpUser, None]:
     """
     Create an example user with a set email, display name, and photo URL.
     """
-    user = await auth_client.sign_up(
+    async with temporary_user(
+        auth_client=auth_client,
         email=EXAMPLE_USER_EMAIL,
         password=EXAMPLE_USER_PASSWORD,
-    )
-
-    await auth_client.update_profile(
-        id_token=user.id_token,
         display_name=EXAMPLE_USER_DISPLAY_NAME,
         photo_url=EXAMPLE_USER_PHOTO_URL,
-    )
-
-    try:
+    ) as user:
         yield user
-    finally:
-        await auth_client.delete_account(user.id_token)
 
 
 @pytest.fixture
@@ -63,34 +61,31 @@ async def example_admin(auth_client: AuthClient) -> AsyncGenerator[SignUpUser, N
     """
     Create an admin user with a set email, display name, and photo URL.
     """
-    user = await auth_client.sign_up(
+    async with temporary_user(
+        auth_client=auth_client,
         email=EXAMPLE_ADMIN_EMAIL,
         password=EXAMPLE_ADMIN_PASSWORD,
-    )
-
-    await auth_client.update_profile(
-        id_token=user.id_token,
         display_name=EXAMPLE_ADMIN_DISPLAY_NAME,
         photo_url=EXAMPLE_ADMIN_PHOTO_URL,
-    )
-
-    auth.set_custom_user_claims(user.local_id, {ADMIN_CLAIM: True})
-
-    try:
+    ) as user:
+        auth.set_custom_user_claims(user.local_id, {ADMIN_CLAIM: True})
         yield user
-    finally:
-        await auth_client.delete_account(user.id_token)
 
 
 @pytest.fixture
 async def service(
     example_user: SignUpUser,
 ) -> AsyncGenerator[GateauFirebaseService, None]:
-    async with GateauFirebaseService(id_token=example_user.id_token) as s:
-        try:
-            yield s
-        finally:
-            await s.db_root.delete()
+    async with temporary_service(id_token=example_user.id_token) as s:
+        yield s
+
+
+@pytest.fixture
+async def admin_service(
+    example_admin: SignUpUser,
+) -> AsyncGenerator[GateauFirebaseService, None]:
+    async with temporary_service(id_token=example_admin.id_token) as s:
+        yield s
 
 
 @pytest.fixture

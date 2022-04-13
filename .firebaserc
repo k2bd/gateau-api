@@ -1,1 +1,14 @@
-{}
+{
+  "projects": {
+    "default": "demo-gateau-test"
+  },
+  "targets": {
+    "demo-gateau-test": {
+      "database": {
+        "default": [
+          "demo-gateau-test"
+        ]
+      }
+    }
+  }
+}

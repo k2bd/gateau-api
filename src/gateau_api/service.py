@@ -15,7 +15,7 @@ Database structure:
                 "{random-unique-id}": {
                     "meaning": "Pikachu owned",
                     "value": true,
-                    "playerName": "aaa",
+                    "player_id": "aaa",
                     "timestamp": "2020-10-10T10:20:30Z",
                 }
             },
@@ -24,6 +24,15 @@ Database structure:
             },
         }
     },
+    "avatars": {
+        "{player-uid}": {
+            "{random-unique-id}": {
+                "national_dex": 123,
+                "allow_shiny": false,
+                "grant_reason": "Tester",
+            }
+        }
+    }
     "desktopJoinTokens": {
         "{player-uid}": "some-game-id",
     }
@@ -40,7 +49,7 @@ from gateau_api.constants import FIREBASE_API_KEY, FIREBASE_DATABASE_URL
 from gateau_api.exceptions import PlayerNotFound
 from gateau_api.game_ram.cartridge_info import ChangeMeaning
 from gateau_api.game_ram.carts import cart_info
-from gateau_api.types import GameEvent, Player, RamChangeInfo
+from gateau_api.types import PokemonAvatar, GameEvent, Player, RamChangeInfo
 
 
 @dataclass
@@ -128,6 +137,18 @@ class GateauFirebaseService:
         Child for subscriptions
         """
         return self.game_db(game_id=game_id) / "subscriptions"
+
+    def avatars_db(self) -> RtdbNode:
+        """
+        Reference to the avatars db
+        """
+        return self.db_root / "avatars"
+
+    def user_avatars_db(self, user_id: str) -> RtdbNode:
+        """
+        Reference to a user's avatars db
+        """
+        return self.avatars_db() / user_id
 
     async def get_player(self, game_id: str, player_id: str) -> Player:
         """
@@ -228,3 +249,32 @@ class GateauFirebaseService:
                     player_id=player.uid,
                 )
                 await self.add_event(game_id=game_id, event=event)
+
+    async def grant_avatar(self, user_id: str, avatar: PokemonAvatar):
+        """
+        Grant an avatar to a player
+        """
+        db = self.user_avatars_db(user_id=user_id)
+        await db.push(avatar.dict())
+
+    async def remove_avatar(self, user_id: str, target_avatar: PokemonAvatar):
+        """
+        Remove an avatar from a player by exact match
+        """
+        db = self.user_avatars_db(user_id=user_id)
+        current_avatars = await self.get_avatars(user_id=user_id)
+        new_avatars = [
+            avatar.dict() for avatar in current_avatars if avatar != target_avatar
+        ]
+        await db.set(new_avatars)
+
+    async def get_avatars(self, user_id: str) -> List[PokemonAvatar]:
+        """
+        Get avatars that a player can use
+        """
+        db = self.user_avatars_db(user_id=user_id)
+        avatars_raw = await db.get()
+        if avatars_raw is None:
+            return []
+        avatars = [PokemonAvatar.parse_obj(event) for event in avatars_raw.values()]
+        return sorted(avatars, key=lambda a: a.national_dex)

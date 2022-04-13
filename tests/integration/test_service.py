@@ -23,7 +23,7 @@ from gateau_api.game_ram.pokemon.constants import (
     ZUBAT_OWNED,
 )
 from gateau_api.service import GateauFirebaseService
-from gateau_api.types import GameEvent, Player, RamChangeInfo, RamEvent
+from gateau_api.types import GameEvent, Player, PokemonAvatar, RamChangeInfo, RamEvent
 from tests.integration.constants import (
     EXAMPLE_USER_DISPLAY_NAME,
     EXAMPLE_USER_PHOTO_URL,
@@ -224,3 +224,21 @@ async def test_handle_ram(
             timestamp=frozen_time,
         ),
     ]
+
+
+@pytest.mark.asyncio
+async def test_grant_avatar_not_allowed(
+    service: GateauFirebaseService,
+    example_user: SignUpUser,
+):
+    """
+    Database rules don't allow normal users to grant avatars
+    """
+    await service.grant_avatar(
+        example_user.local_id,
+        PokemonAvatar(
+            national_dex=25,
+            allow_shiny=True,
+            grant_reason="Hacking",
+        ),
+    )

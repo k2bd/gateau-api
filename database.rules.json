@@ -1,8 +1,12 @@
 {
     "rules": {
         "games": {
-            ".read": true,
+            ".read": "auth != null",
             ".write": "auth != null"
+        },
+        "avatars": {
+            ".read": "auth != null",
+            ".write": "auth.token.admin === true"
         }
     }
 }
