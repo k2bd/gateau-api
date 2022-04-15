@@ -23,7 +23,7 @@ from gateau_api.game_ram.pokemon.constants import (
     ZUBAT_OWNED,
 )
 from gateau_api.service import GateauFirebaseService
-from gateau_api.types import GameEvent, Player, RamChangeInfo, RamEvent
+from gateau_api.types import GameEvent, Player, PokemonAvatar, RamChangeInfo, RamEvent
 from tests.integration.constants import (
     EXAMPLE_USER_DISPLAY_NAME,
     EXAMPLE_USER_PHOTO_URL,
@@ -224,3 +224,47 @@ async def test_handle_ram(
             timestamp=frozen_time,
         ),
     ]
+
+
+@pytest.mark.asyncio
+async def test_avatars(
+    admin_service: GateauFirebaseService,
+    example_user: SignUpUser,
+):
+    """
+    Admins can grant avatars to users
+    """
+    avatar1 = PokemonAvatar(
+        national_dex=25,
+        allow_shiny=True,
+        grant_reason="Reason 1",
+    )
+    avatar2 = PokemonAvatar(
+        national_dex=26,
+        allow_shiny=False,
+        grant_reason=None,
+    )
+    avatar3 = PokemonAvatar(
+        national_dex=27,
+        allow_shiny=True,
+        grant_reason="Reason 2",
+    )
+    for avatar in [avatar1, avatar2, avatar3]:
+        await admin_service.grant_avatar(
+            example_user.local_id,
+            avatar=avatar,
+        )
+
+    available_avatars = await admin_service.get_avatars(example_user.local_id)
+
+    assert sorted(available_avatars, key=lambda a: a.national_dex) == [
+        avatar1,
+        avatar2,
+        avatar3,
+    ]
+
+    await admin_service.revoke_avatar(example_user.local_id, avatar2)
+    await admin_service.revoke_avatar(example_user.local_id, avatar1)
+
+    available_avatars_2 = await admin_service.get_avatars(example_user.local_id)
+    assert available_avatars_2 == [avatar3]
