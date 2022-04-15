@@ -13,7 +13,7 @@ from gateau_api.dependencies.service import get_service
 from gateau_api.dependencies.user import require_admin
 from gateau_api.firebase import firebase_init_app
 from gateau_api.service import GateauFirebaseService
-from gateau_api.types import FirebaseUser
+from gateau_api.types import FirebaseUser, PokemonAvatar
 
 logging.basicConfig(level=logging.INFO)
 
@@ -51,3 +51,21 @@ async def get_users(
         )
 
     return results
+
+
+@router.post("/admin/avatar")
+async def grant_avatar(
+    userId: str,
+    avatar: PokemonAvatar,
+    service: GateauFirebaseService = Depends(get_service),
+):
+    await service.grant_avatar(user_id=userId, avatar=avatar)
+
+
+@router.delete("/admin/avatar")
+async def revoke_avatar(
+    userId: str,
+    avatar: PokemonAvatar,
+    service: GateauFirebaseService = Depends(get_service),
+):
+    await service.revoke_avatar(user_id=userId, target_avatar=avatar)

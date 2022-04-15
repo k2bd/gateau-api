@@ -1,4 +1,3 @@
-from contextlib import asynccontextmanager, contextmanager
 from typing import AsyncGenerator
 
 import pytest
@@ -36,9 +35,6 @@ async def auth_client() -> AsyncGenerator[AuthClient, None]:
         )
     async with AuthClient(api_key=FIREBASE_API_KEY) as auth_client:
         yield auth_client
-
-
-
 
 
 @pytest.fixture

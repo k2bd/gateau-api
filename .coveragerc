@@ -1,3 +1,5 @@
 [report]
 show_missing = True
-omit = src\gateau_api\game_ram\pokemon\constants.py
+omit =
+    src/gateau_api/game_ram/pokemon/constants.py
+    src/gateau_api/scripts/*

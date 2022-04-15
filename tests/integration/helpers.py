@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+
 from firebasil.auth import AuthClient
 
 from gateau_api.service import GateauFirebaseService

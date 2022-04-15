@@ -49,7 +49,7 @@ from gateau_api.constants import FIREBASE_API_KEY, FIREBASE_DATABASE_URL
 from gateau_api.exceptions import PlayerNotFound
 from gateau_api.game_ram.cartridge_info import ChangeMeaning
 from gateau_api.game_ram.carts import cart_info
-from gateau_api.types import PokemonAvatar, GameEvent, Player, RamChangeInfo
+from gateau_api.types import GameEvent, Player, PokemonAvatar, RamChangeInfo
 
 
 @dataclass
@@ -257,16 +257,19 @@ class GateauFirebaseService:
         db = self.user_avatars_db(user_id=user_id)
         await db.push(avatar.dict())
 
-    async def remove_avatar(self, user_id: str, target_avatar: PokemonAvatar):
+    async def revoke_avatar(self, user_id: str, target_avatar: PokemonAvatar):
         """
         Remove an avatar from a player by exact match
         """
         db = self.user_avatars_db(user_id=user_id)
-        current_avatars = await self.get_avatars(user_id=user_id)
-        new_avatars = [
-            avatar.dict() for avatar in current_avatars if avatar != target_avatar
+        avatars_raw = await db.get()
+        remove_keys: List[str] = [
+            key
+            for key, value in avatars_raw.items()
+            if PokemonAvatar.parse_obj(value) == target_avatar
         ]
-        await db.set(new_avatars)
+        for key in remove_keys:
+            await (db / key).delete()
 
     async def get_avatars(self, user_id: str) -> List[PokemonAvatar]:
         """
@@ -276,5 +279,7 @@ class GateauFirebaseService:
         avatars_raw = await db.get()
         if avatars_raw is None:
             return []
-        avatars = [PokemonAvatar.parse_obj(event) for event in avatars_raw.values()]
+        avatars = [
+            PokemonAvatar.parse_obj(avatar_data) for avatar_data in avatars_raw.values()
+        ]
         return sorted(avatars, key=lambda a: a.national_dex)

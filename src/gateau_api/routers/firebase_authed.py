@@ -10,7 +10,7 @@ from fastapi_camelcase import CamelModel
 
 from gateau_api.dependencies import get_service, get_user_uid
 from gateau_api.service import GateauFirebaseService
-from gateau_api.types import Player, RamChangeInfo, Subscription
+from gateau_api.types import Player, PokemonAvatar, RamChangeInfo, Subscription
 
 logging.basicConfig(level=logging.INFO)
 
@@ -68,6 +68,18 @@ async def post_subsctiptions(
         game_id=gameId,
         meanings=set(subscriptions.subscriptions),
     )
+
+
+@router.get("/user/avatars", response_model=List[PokemonAvatar])
+async def get_avatars(
+    user_uid: str = Depends(get_user_uid),
+    service: GateauFirebaseService = Depends(get_service),
+):
+    """
+    Get the extra avatars you're allowed to select
+    """
+    avatars = await service.get_avatars(user_id=user_uid)
+    return avatars
 
 
 # ---- Desktop app routes ----

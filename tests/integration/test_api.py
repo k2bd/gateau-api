@@ -23,7 +23,7 @@ from gateau_api.game_ram.pokemon.constants import (
     ZUBAT_OWNED,
 )
 from gateau_api.service import GateauFirebaseService
-from gateau_api.types import GameEvent, Player, RamChangeInfo, RamEvent
+from gateau_api.types import GameEvent, Player, PokemonAvatar, RamChangeInfo, RamEvent
 from tests.integration.constants import (
     EXAMPLE_ADMIN_DISPLAY_NAME,
     EXAMPLE_ADMIN_EMAIL,
@@ -267,3 +267,187 @@ async def test_admin_get_users_200(
     assert sorted(response.json(), key=lambda i: i["uid"]) == sorted(
         expected, key=lambda i: i["uid"]
     )
+
+
+@pytest.mark.asyncio
+async def test_user_get_avatars_200(
+    api_client: TestClient,
+    example_user: SignUpUser,
+    example_admin: SignUpUser,
+):
+    """
+    Users can get the avatars available to them
+    """
+    avatar1 = PokemonAvatar(
+        national_dex=25,
+        allow_shiny=True,
+        grant_reason="Reason 1",
+    )
+    avatar2 = PokemonAvatar(
+        national_dex=26,
+        allow_shiny=False,
+        grant_reason=None,
+    )
+    avatar3 = PokemonAvatar(
+        national_dex=27,
+        allow_shiny=True,
+        grant_reason="Reason 2",
+    )
+    for avatar in [avatar1, avatar2, avatar3]:
+        response = api_client.post(
+            "admin/avatar",
+            headers={"Authorization": f"Bearer {example_admin.id_token}"},
+            params={"userId": example_user.local_id},
+            json=avatar.dict(),
+        )
+        assert response.status_code == 200
+
+    response = api_client.get(
+        "/user/avatars",
+        headers={"Authorization": f"Bearer {example_user.id_token}"},
+    )
+    assert response.status_code == 200
+    expected = [
+        {
+            "allowShiny": True,
+            "grantReason": "Reason 1",
+            "nationalDex": 25,
+        },
+        {
+            "allowShiny": False,
+            "grantReason": None,
+            "nationalDex": 26,
+        },
+        {
+            "allowShiny": True,
+            "grantReason": "Reason 2",
+            "nationalDex": 27,
+        },
+    ]
+    assert sorted(response.json(), key=lambda i: i["nationalDex"]) == expected
+
+
+@pytest.mark.asyncio
+async def test_avatars(
+    api_client: TestClient,
+    example_user: SignUpUser,
+    example_admin: SignUpUser,
+):
+    """
+    Admins can grant avatars to users
+    """
+    avatar1 = PokemonAvatar(
+        national_dex=25,
+        allow_shiny=True,
+        grant_reason="Reason 1",
+    )
+    avatar2 = PokemonAvatar(
+        national_dex=26,
+        allow_shiny=False,
+        grant_reason=None,
+    )
+    avatar3 = PokemonAvatar(
+        national_dex=27,
+        allow_shiny=True,
+        grant_reason="Reason 2",
+    )
+    for avatar in [avatar1, avatar2, avatar3]:
+        response = api_client.post(
+            "admin/avatar",
+            headers={"Authorization": f"Bearer {example_admin.id_token}"},
+            params={"userId": example_user.local_id},
+            json=avatar.dict(),
+        )
+        assert response.status_code == 200
+
+    response = api_client.get(
+        "/admin/users",
+        headers={"Authorization": f"Bearer {example_admin.id_token}"},
+    )
+    assert response.status_code == 200
+    expected = [
+        {
+            "uid": example_user.local_id,
+            "displayName": EXAMPLE_USER_DISPLAY_NAME,
+            "photoUrl": EXAMPLE_USER_PHOTO_URL,
+            "email": EXAMPLE_USER_EMAIL,
+            "claims": None,
+            "avatars": [
+                {
+                    "allowShiny": True,
+                    "grantReason": "Reason 1",
+                    "nationalDex": 25,
+                },
+                {
+                    "allowShiny": False,
+                    "grantReason": None,
+                    "nationalDex": 26,
+                },
+                {
+                    "allowShiny": True,
+                    "grantReason": "Reason 2",
+                    "nationalDex": 27,
+                },
+            ],
+        },
+        {
+            "uid": example_admin.local_id,
+            "displayName": EXAMPLE_ADMIN_DISPLAY_NAME,
+            "photoUrl": EXAMPLE_ADMIN_PHOTO_URL,
+            "email": EXAMPLE_ADMIN_EMAIL,
+            "claims": {"admin": True},
+            "avatars": [],
+        },
+    ]
+    assert sorted(response.json(), key=lambda i: i["uid"]) == sorted(
+        expected, key=lambda i: i["uid"]
+    )
+
+    assert (
+        api_client.delete(
+            "admin/avatar",
+            headers={"Authorization": f"Bearer {example_admin.id_token}"},
+            params={"userId": example_user.local_id},
+            json=avatar2.dict(),
+        ).status_code
+        == 200
+    )
+    assert (
+        api_client.delete(
+            "admin/avatar",
+            headers={"Authorization": f"Bearer {example_admin.id_token}"},
+            params={"userId": example_user.local_id},
+            json=avatar1.dict(),
+        ).status_code
+        == 200
+    )
+
+    response = api_client.get(
+        "/admin/users",
+        headers={"Authorization": f"Bearer {example_admin.id_token}"},
+    )
+    assert response.status_code == 200
+    expected = [
+        {
+            "uid": example_user.local_id,
+            "displayName": EXAMPLE_USER_DISPLAY_NAME,
+            "photoUrl": EXAMPLE_USER_PHOTO_URL,
+            "email": EXAMPLE_USER_EMAIL,
+            "claims": None,
+            "avatars": [
+                {
+                    "allowShiny": True,
+                    "grantReason": "Reason 2",
+                    "nationalDex": 27,
+                },
+            ],
+        },
+        {
+            "uid": example_admin.local_id,
+            "displayName": EXAMPLE_ADMIN_DISPLAY_NAME,
+            "photoUrl": EXAMPLE_ADMIN_PHOTO_URL,
+            "email": EXAMPLE_ADMIN_EMAIL,
+            "claims": {"admin": True},
+            "avatars": [],
+        },
+    ]

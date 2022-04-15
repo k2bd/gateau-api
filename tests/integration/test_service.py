@@ -227,18 +227,44 @@ async def test_handle_ram(
 
 
 @pytest.mark.asyncio
-async def test_grant_avatar_not_allowed(
-    service: GateauFirebaseService,
+async def test_avatars(
+    admin_service: GateauFirebaseService,
     example_user: SignUpUser,
 ):
     """
-    Database rules don't allow normal users to grant avatars
+    Admins can grant avatars to users
     """
-    await service.grant_avatar(
-        example_user.local_id,
-        PokemonAvatar(
-            national_dex=25,
-            allow_shiny=True,
-            grant_reason="Hacking",
-        ),
+    avatar1 = PokemonAvatar(
+        national_dex=25,
+        allow_shiny=True,
+        grant_reason="Reason 1",
     )
+    avatar2 = PokemonAvatar(
+        national_dex=26,
+        allow_shiny=False,
+        grant_reason=None,
+    )
+    avatar3 = PokemonAvatar(
+        national_dex=27,
+        allow_shiny=True,
+        grant_reason="Reason 2",
+    )
+    for avatar in [avatar1, avatar2, avatar3]:
+        await admin_service.grant_avatar(
+            example_user.local_id,
+            avatar=avatar,
+        )
+
+    available_avatars = await admin_service.get_avatars(example_user.local_id)
+
+    assert sorted(available_avatars, key=lambda a: a.national_dex) == [
+        avatar1,
+        avatar2,
+        avatar3,
+    ]
+
+    await admin_service.revoke_avatar(example_user.local_id, avatar2)
+    await admin_service.revoke_avatar(example_user.local_id, avatar1)
+
+    available_avatars_2 = await admin_service.get_avatars(example_user.local_id)
+    assert available_avatars_2 == [avatar3]
